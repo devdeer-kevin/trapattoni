@@ -187,7 +187,12 @@ export async function getPickupDates(
     const frequency = $(h3El).next("b").text().trim();
 
     // Dates are in the .termintable that follows
-    const termintable = $(h3El).nextAll(".termintable").first();
+    const nextContainer = $(h3El).next();
+    const termintable = nextContainer.hasClass("termintable")
+      ? nextContainer
+      : nextContainer.find(".termintable").first().length
+        ? nextContainer.find(".termintable").first()
+        : $(h3El).nextAll(".termintable").first();
     const dates: PickupEntry[] = [];
 
     termintable.find("div[class*='col-']").each((_, cell) => {
