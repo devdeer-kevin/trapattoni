@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Trash } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types (mirrored from lib/sab.ts)
@@ -187,7 +188,27 @@ function PickupBadge({ type }: { type: string }) {
   );
 }
 
-function DateRow({
+// Group entries by month label e.g. "März 2026"
+function groupByMonth<T extends { date: string }>(
+  entries: T[],
+): { month: string; entries: T[] }[] {
+  const map = new Map<string, T[]>();
+  for (const e of entries) {
+    const d = new Date(e.date);
+    const label = d.toLocaleDateString("de-DE", {
+      month: "long",
+      year: "numeric",
+    });
+    if (!map.has(label)) map.set(label, []);
+    map.get(label)!.push(e);
+  }
+  return Array.from(map.entries()).map(([month, entries]) => ({
+    month,
+    entries,
+  }));
+}
+
+function CalendarCard({
   date,
   dayLabel,
   isHolidayShift,
@@ -198,33 +219,68 @@ function DateRow({
   isHolidayShift: boolean;
   badge?: string;
 }) {
-  const isToday = date === today.toISOString().split("T")[0];
+  const todayStr = today.toISOString().split("T")[0];
+  const isToday = date === todayStr;
+  const dayNumber = new Date(date).getDate();
 
   return (
-    <div
-      className={`flex items-center justify-between rounded-lg px-4 py-2.5 ${
-        isToday ? "bg-green-50 ring-1 ring-green-300" : "hover:bg-gray-50"
-      }`}
-    >
-      <div className="flex items-center gap-3">
-        <span className="w-6 text-center text-xs font-semibold text-gray-400">
+    <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm border border-gray-100">
+      {/* Date circle */}
+      <div className="flex flex-col items-center justify-center w-12 shrink-0">
+        <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
           {dayLabel}
         </span>
-        <span className="text-sm font-medium text-gray-800">
-          {formatDate(date)}
-        </span>
-        {isHolidayShift && (
-          <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-600">
-            Feiertag
-          </span>
-        )}
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold ${
+            isToday ? "bg-green-500 text-white" : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {dayNumber}
+        </div>
         {isToday && (
-          <span className="rounded-full bg-green-200 px-2 py-0.5 text-xs font-semibold text-green-700">
+          <span className="mt-0.5 text-[10px] font-semibold text-green-500">
             Heute
           </span>
         )}
       </div>
-      {badge && <PickupBadge type={badge} />}
+
+      {/* Content */}
+      <div className="flex flex-1 items-center justify-between gap-2">
+        <div>
+          {badge && (
+            <p className="text-sm font-semibold text-gray-800">{badge}</p>
+          )}
+          {isHolidayShift && (
+            <p className="text-xs text-orange-500 mt-0.5">
+              ⚠ Feiertagsbedingt verschoben
+            </p>
+          )}
+        </div>
+        {badge && (
+          <div
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${getWasteColor(badge).dot}`}
+          >
+            <Trash className="h-4 w-4 text-white" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MonthGroup({
+  month,
+  children,
+}: {
+  month: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <h3 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-widest text-gray-400">
+        {month}
+      </h3>
+      <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
 }
@@ -238,6 +294,15 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
     (c) => c.type === activeTab,
   );
 
+  const activeEntries =
+    activeTab === "Alle"
+      ? allEntries
+      : (activeCollection?.dates
+          .filter((d) => isFuture(d.date))
+          .map((d) => ({ ...d, type: activeCollection.type })) ?? []);
+
+  const grouped = groupByMonth(activeEntries);
+
   return (
     <div className="mt-8">
       <h2 className="mb-4 text-lg font-semibold text-gray-900">
@@ -245,7 +310,7 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
       </h2>
 
       {/* Tabs */}
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
           const color = tab === "Alle" ? null : getWasteColor(tab);
           const isActive = activeTab === tab;
@@ -268,49 +333,31 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
       </div>
 
       {/* Content */}
-      <div className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
-        {activeTab === "Alle" ? (
-          allEntries.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-gray-400">
-              Keine bevorstehenden Termine.
-            </p>
-          ) : (
-            allEntries.map((e, i) => (
-              <DateRow
+      {grouped.length === 0 ? (
+        <p className="mt-8 text-center text-sm text-gray-400">
+          Keine bevorstehenden Termine.
+        </p>
+      ) : (
+        grouped.map(({ month, entries }) => (
+          <MonthGroup key={month} month={month}>
+            {entries.map((e, i) => (
+              <CalendarCard
                 key={i}
                 date={e.date}
                 dayLabel={e.dayLabel}
                 isHolidayShift={e.isHolidayShift}
-                badge={e.type}
+                badge={"type" in e ? e.type : undefined}
               />
-            ))
-          )
-        ) : activeCollection ? (
-          activeCollection.dates.filter((d) => isFuture(d.date)).length ===
-          0 ? (
-            <p className="px-4 py-6 text-center text-sm text-gray-400">
-              Keine bevorstehenden Termine.
-            </p>
-          ) : (
-            activeCollection.dates
-              .filter((d) => isFuture(d.date))
-              .map((d, i) => (
-                <DateRow
-                  key={i}
-                  date={d.date}
-                  dayLabel={d.dayLabel}
-                  isHolidayShift={d.isHolidayShift}
-                />
-              ))
-          )
-        ) : null}
-      </div>
+            ))}
+          </MonthGroup>
+        ))
+      )}
 
       {/* Frequency info per waste type */}
       {activeTab !== "Alle" &&
         activeCollection &&
         activeCollection.frequency && (
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-4 text-xs text-gray-400">
             {activeCollection.frequency}
           </p>
         )}
