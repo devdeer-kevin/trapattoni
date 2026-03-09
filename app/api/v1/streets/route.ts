@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const streets = await searchStreets(query);
     return NextResponse.json({ streets });
   } catch (error) {
-    console.error("[/api/streets]", error);
+    console.error("[/api/v1/streets]", error);
     return NextResponse.json(
       { error: "Failed to fetch streets" },
       { status: 502 },

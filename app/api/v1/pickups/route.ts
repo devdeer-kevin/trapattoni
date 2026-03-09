@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(schedule);
   } catch (error) {
-    console.error("[/api/pickups]", error);
+    console.error("[/api/v1/pickups]", error);
     return NextResponse.json(
       { error: "Failed to fetch pickup dates" },
       { status: 502 },

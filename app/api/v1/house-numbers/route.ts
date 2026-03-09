@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const houseNumbers = await getHouseNumbers(street);
     return NextResponse.json({ houseNumbers });
   } catch (error) {
-    console.error("[/api/house-numbers]", error);
+    console.error("[/api/v1/house-numbers]", error);
     return NextResponse.json(
       { error: "Failed to fetch house numbers" },
       { status: 502 },
