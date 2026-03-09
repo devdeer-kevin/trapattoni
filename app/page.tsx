@@ -36,9 +36,9 @@ const WASTE_COLORS: Record<string, { bg: string; text: string; dot: string }> =
       dot: "bg-gray-500",
     },
     Bioabfall: {
-      bg: "bg-green-100",
-      text: "text-green-700",
-      dot: "bg-green-500",
+      bg: "bg-amber-100",
+      text: "text-amber-800",
+      dot: "bg-amber-800",
     },
     Altpapier: {
       bg: "bg-blue-100",
@@ -221,47 +221,30 @@ function CalendarCard({
 }) {
   const todayStr = today.toISOString().split("T")[0];
   const isToday = date === todayStr;
-  const dayNumber = new Date(date).getDate();
+  const color = badge ? getWasteColor(badge) : null;
 
   return (
     <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm border border-gray-100">
-      {/* Date circle */}
-      <div className="flex flex-col items-center justify-center w-12 shrink-0">
-        <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-          {dayLabel}
-        </span>
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold ${
-            isToday ? "bg-green-500 text-white" : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {dayNumber}
-        </div>
-        {isToday && (
-          <span className="mt-0.5 text-[10px] font-semibold text-green-500">
-            Heute
-          </span>
-        )}
+      {/* Trash icon in colored circle */}
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${color?.dot ?? "bg-gray-200"}`}
+      >
+        <Trash className="h-5 w-5 text-white" />
       </div>
 
-      {/* Content */}
-      <div className="flex flex-1 items-center justify-between gap-2">
-        <div>
-          {badge && (
-            <p className="text-sm font-semibold text-gray-800">{badge}</p>
+      {/* Date + waste type */}
+      <div className="flex flex-col">
+        <span className="text-xs text-gray-400">
+          {dayLabel}, {formatDate(date)}
+          {isToday && (
+            <span className="ml-1.5 font-semibold text-green-500">· Heute</span>
           )}
-          {isHolidayShift && (
-            <p className="text-xs text-orange-500 mt-0.5">
-              ⚠ Feiertagsbedingt verschoben
-            </p>
-          )}
-        </div>
+        </span>
         {badge && (
-          <div
-            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${getWasteColor(badge).dot}`}
-          >
-            <Trash className="h-4 w-4 text-white" />
-          </div>
+          <p className="text-sm font-semibold text-gray-800">{badge}</p>
+        )}
+        {isHolidayShift && (
+          <p className="text-xs text-orange-500">⚠ Feiertagsbedingt verschoben</p>
         )}
       </div>
     </div>
