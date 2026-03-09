@@ -176,18 +176,6 @@ function StreetAutocomplete({
   );
 }
 
-function PickupBadge({ type }: { type: string }) {
-  const color = getWasteColor(type);
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${color.bg} ${color.text}`}
-    >
-      <span className={`h-1.5 w-1.5 rounded-full ${color.dot}`} />
-      {type}
-    </span>
-  );
-}
-
 // Group entries by month label e.g. "März 2026"
 function groupByMonth<T extends { date: string }>(
   entries: T[],
@@ -244,7 +232,9 @@ function CalendarCard({
           <p className="text-sm font-semibold text-gray-800">{badge}</p>
         )}
         {isHolidayShift && (
-          <p className="text-xs text-orange-500">⚠ Feiertagsbedingt verschoben</p>
+          <p className="text-xs text-orange-500">
+            ⚠ Feiertagsbedingt verschoben
+          </p>
         )}
       </div>
     </div>
