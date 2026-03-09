@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Trash } from "lucide-react";
+import { Trash, LogIn, UserPlus, LogOut } from "lucide-react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // ---------------------------------------------------------------------------
 // Types (mirrored from lib/sab.ts)
@@ -342,6 +343,60 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 // Main page
 // ---------------------------------------------------------------------------
 
+function AuthSection() {
+  const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
+
+  if (isLoading) {
+    return <div className="h-8 w-24 animate-pulse rounded-lg bg-gray-100" />;
+  }
+
+  if (isAuthenticated && user) {
+    const initials =
+      `${user.given_name?.[0] ?? ""}${user.family_name?.[0] ?? ""}`.toUpperCase() ||
+      user.email?.[0]?.toUpperCase() ||
+      "?";
+
+    return (
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white">
+            {initials}
+          </div>
+          <span className="text-sm font-medium text-gray-700">
+            {user.given_name ?? user.email}
+          </span>
+        </div>
+        <a
+          href="/api/auth/logout"
+          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        >
+          <LogOut className="h-4 w-4" />
+          Abmelden
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <a
+        href="/api/auth/login"
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+      >
+        <LogIn className="h-4 w-4" />
+        Anmelden
+      </a>
+      <a
+        href="/api/auth/register"
+        className="flex items-center gap-1.5 rounded-lg bg-green-500 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-green-600"
+      >
+        <UserPlus className="h-4 w-4" />
+        Registrieren
+      </a>
+    </div>
+  );
+}
+
 export default function Home() {
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
@@ -395,12 +450,15 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-4 shadow-sm">
-        <div className="mx-auto max-w-lg">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">
-            🗑️ Tonneraus
-          </h1>
-          <p className="text-xs text-gray-400">Abfuhrkalender Magdeburg</p>
+      <header className="bg-white border-b border-gray-100 px-4 py-3 shadow-sm">
+        <div className="mx-auto flex max-w-lg items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-gray-900">
+              🗑️ Tonneraus
+            </h1>
+            <p className="text-xs text-gray-400">Abfuhrkalender Magdeburg</p>
+          </div>
+          <AuthSection />
         </div>
       </header>
 
