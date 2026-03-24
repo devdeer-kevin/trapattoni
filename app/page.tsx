@@ -397,13 +397,13 @@ function UserMenu({ initials, name }: { initials: string; name: string }) {
             Meine Adressen
           </Link>
           <div className="my-1 border-t border-gray-100" />
-          <a
+          <Link
             href="/api/auth/logout"
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
           >
             <LogOut className="h-4 w-4" />
             Abmelden
-          </a>
+          </Link>
         </div>
       )}
     </div>
@@ -433,20 +433,20 @@ function AuthSection() {
 
   return (
     <div className="flex items-center gap-2">
-      <a
+      <Link
         href="/api/auth/login"
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
       >
         <LogIn className="h-4 w-4" />
         Anmelden
-      </a>
-      <a
+      </Link>
+      <Link
         href="/api/auth/register"
         className="flex items-center gap-1.5 rounded-lg bg-green-500 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-green-600"
       >
         <UserPlus className="h-4 w-4" />
         Registrieren
-      </a>
+      </Link>
     </div>
   );
 }

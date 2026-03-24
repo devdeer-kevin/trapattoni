@@ -451,6 +451,32 @@ export default function AddressesPage() {
       </header>
 
       <div className="mx-auto max-w-lg px-4 py-6 space-y-4">
+        {/* Add form – always at the top */}
+        {showAddForm && (
+          <AddAddressForm
+            onSave={handleSave}
+            onCancel={() => setShowAddForm(false)}
+          />
+        )}
+
+        {/* "Add address" trigger button – shown when form is hidden and limit not reached */}
+        {!pageLoading && !showAddForm && !atLimit && (
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-gray-200 bg-white py-4 text-sm font-medium text-gray-400 transition-colors hover:border-green-300 hover:text-green-500"
+          >
+            <Plus className="h-4 w-4" />
+            Adresse hinzufügen
+          </button>
+        )}
+
+        {/* Fetch error */}
+        {pageError && (
+          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+            {pageError}
+          </div>
+        )}
+
         {/* Loading skeletons */}
         {pageLoading && (
           <div className="space-y-3">
@@ -463,16 +489,9 @@ export default function AddressesPage() {
           </div>
         )}
 
-        {/* Fetch error */}
-        {pageError && (
-          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {pageError}
-          </div>
-        )}
-
         {/* Empty state */}
         {!pageLoading && !pageError && addresses.length === 0 && !showAddForm && (
-          <div className="flex flex-col items-center py-16 text-center">
+          <div className="flex flex-col items-center py-12 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
               <MapPin className="h-8 w-8 text-green-400" />
             </div>
@@ -483,13 +502,6 @@ export default function AddressesPage() {
               Füge deine Adresse hinzu, um den Abfuhrkalender schnell
               aufzurufen.
             </p>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="mt-6 flex items-center gap-2 rounded-xl bg-green-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-600"
-            >
-              <Plus className="h-4 w-4" />
-              Adresse hinzufügen
-            </button>
           </div>
         )}
 
@@ -505,25 +517,6 @@ export default function AddressesPage() {
               />
             ))}
           </div>
-        )}
-
-        {/* Add form */}
-        {showAddForm && (
-          <AddAddressForm
-            onSave={handleSave}
-            onCancel={() => setShowAddForm(false)}
-          />
-        )}
-
-        {/* "Add address" trigger button – shown when list is non-empty and form is hidden */}
-        {!pageLoading && !showAddForm && addresses.length > 0 && !atLimit && (
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-gray-200 bg-white py-4 text-sm font-medium text-gray-400 transition-colors hover:border-green-300 hover:text-green-500"
-          >
-            <Plus className="h-4 w-4" />
-            Adresse hinzufügen
-          </button>
         )}
 
         {/* Limit reached notice */}
