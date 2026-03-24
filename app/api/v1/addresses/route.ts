@@ -1,0 +1,134 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/db/ensure-user";
+
+// GET /api/v1/addresses – list all saved addresses for the authenticated user
+export async function GET() {
+  const { isAuthenticated, getUser } = getKindeServerSession();
+
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const kindeUser = await getUser();
+  if (!kindeUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const [user] = await db`
+    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
+  `;
+
+  if (!user) {
+    return NextResponse.json({ addresses: [] });
+  }
+
+  const addresses = await db`
+    SELECT
+      a.id,
+      a.street,
+      a.house_number,
+      ua.is_default,
+      ua.created_at
+    FROM user_addresses ua
+    JOIN addresses a ON a.id = ua.address_id
+    WHERE ua.user_id = ${user.id}
+    ORDER BY ua.is_default DESC, ua.created_at ASC
+  `;
+
+  return NextResponse.json({ addresses });
+}
+
+// POST /api/v1/addresses – save a new address for the authenticated user
+export async function POST(request: NextRequest) {
+  const { isAuthenticated, getUser } = getKindeServerSession();
+
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const kindeUser = await getUser();
+  if (!kindeUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await request.json();
+  const { street, house_number, sab_standplatz_id } = body;
+
+  if (!street || !house_number || !sab_standplatz_id) {
+    return NextResponse.json(
+      { error: "Straße, Hausnummer und Standplatz-ID sind erforderlich." },
+      { status: 400 },
+    );
+  }
+
+  // The SAB system uses the street name as its street identifier
+  const sab_street_id: string = street;
+
+  await ensureUser(kindeUser.id, kindeUser.email ?? "");
+
+  const [user] = await db`
+    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
+  `;
+
+  // Enforce 50-address limit
+  const [{ count }] = await db`
+    SELECT COUNT(*) AS count FROM user_addresses WHERE user_id = ${user.id}
+  `;
+
+  if (Number(count) >= 50) {
+    return NextResponse.json(
+      { error: "Maximale Anzahl von 50 Adressen erreicht." },
+      { status: 422 },
+    );
+  }
+
+  // Find or create the canonical address record (sab_standplatz_id is the unique key)
+  let [address] = await db`
+    SELECT id FROM addresses WHERE sab_standplatz_id = ${sab_standplatz_id}
+  `;
+
+  if (!address) {
+    [address] = await db`
+      INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
+      VALUES (${street}, ${house_number}, ${sab_street_id}, ${sab_standplatz_id})
+      RETURNING id
+    `;
+  }
+
+  // Prevent duplicate associations
+  const [existing] = await db`
+    SELECT address_id FROM user_addresses
+    WHERE user_id = ${user.id} AND address_id = ${address.id}
+  `;
+
+  if (existing) {
+    return NextResponse.json(
+      { error: "Diese Adresse ist bereits gespeichert." },
+      { status: 409 },
+    );
+  }
+
+  // First address automatically becomes the default
+  const isFirst = Number(count) === 0;
+
+  await db`
+    INSERT INTO user_addresses (user_id, address_id, is_default)
+    VALUES (${user.id}, ${address.id}, ${isFirst})
+  `;
+
+  const [newAddress] = await db`
+    SELECT
+      a.id,
+      a.street,
+      a.house_number,
+      ua.is_default,
+      ua.created_at
+    FROM user_addresses ua
+    JOIN addresses a ON a.id = ua.address_id
+    WHERE ua.user_id = ${user.id} AND ua.address_id = ${address.id}
+  `;
+
+  return NextResponse.json({ address: newAddress }, { status: 201 });
+}

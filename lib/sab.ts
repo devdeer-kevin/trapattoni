@@ -124,24 +124,32 @@ export async function searchStreets(query: string): Promise<string[]> {
   return streets;
 }
 
+export type HouseNumberEntry = {
+  number: string;
+  sabStandplatzId: string;
+};
+
 /**
  * Get all available house numbers for a given street.
  * Calls the SAB `getStandplatzInfo` endpoint and parses the button HTML.
  *
- * Returns an array of house number strings, e.g. ["2", "2a", "2b", "3", ...].
+ * Returns entries with the house number and the SAB standplatz ID, e.g.
+ * [{ number: "2a", sabStandplatzId: "12345" }, ...]
  */
-export async function getHouseNumbers(street: string): Promise<string[]> {
+export async function getHouseNumbers(
+  street: string,
+): Promise<HouseNumberEntry[]> {
   const html = await sabPost({ r: "getStandplatzInfo", strasse: street });
   const $ = cheerio.load(html);
 
-  const houseNumbers: string[] = [];
+  const houseNumbers: HouseNumberEntry[] = [];
 
-  // Each house number is rendered as a button with onclick="get('<nr>','<id>')"
+  // Each house number is rendered as a button with onclick="get('<nr>','<standplatz_id>')"
   $("button[onclick]").each((_, el) => {
     const onclick = $(el).attr("onclick") ?? "";
-    const match = onclick.match(/get\('(.+?)'/);
+    const match = onclick.match(/get\('(.+?)','(.+?)'\)/);
     if (match) {
-      houseNumbers.push(match[1]);
+      houseNumbers.push({ number: match[1], sabStandplatzId: match[2] });
     }
   });
 

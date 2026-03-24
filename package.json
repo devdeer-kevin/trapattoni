@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@kinde-oss/kinde-auth-nextjs": "^2.11.0",
+    "@neondatabase/serverless": "^1.0.2",
     "cheerio": "^1.2.0",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",

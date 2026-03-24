@@ -25,6 +25,11 @@ type PickupSchedule = {
   collections: WasteCollection[];
 };
 
+type HouseNumberEntry = {
+  number: string;
+  sabStandplatzId: string;
+};
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -401,7 +406,7 @@ export default function Home() {
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [schedule, setSchedule] = useState<PickupSchedule | null>(null);
-  const [fallbackNumbers, setFallbackNumbers] = useState<string[] | null>(null);
+  const [fallbackNumbers, setFallbackNumbers] = useState<HouseNumberEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -503,16 +508,16 @@ export default function Home() {
         {/* Fallback house number picker */}
         {fallbackNumbers && fallbackNumbers.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {fallbackNumbers.map((nr) => (
+            {fallbackNumbers.map((entry) => (
               <button
-                key={nr}
+                key={entry.sabStandplatzId}
                 onClick={() => {
-                  setHouseNumber(nr);
-                  fetchSchedule(street, nr);
+                  setHouseNumber(entry.number);
+                  fetchSchedule(street, entry.number);
                 }}
                 className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-green-50 hover:border-green-300"
               >
-                {nr}
+                {entry.number}
               </button>
             ))}
           </div>
