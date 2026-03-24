@@ -412,7 +412,13 @@ function AddressSwitcher({
           <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            value={open ? query : (active ? `${active.street} ${active.house_number}` : "")}
+            value={
+              open
+                ? query
+                : active
+                  ? `${active.street} ${active.house_number}`
+                  : ""
+            }
             placeholder="Adresse wählen..."
             onFocus={() => setOpen(true)}
             onChange={(e) => {
@@ -434,9 +440,7 @@ function AddressSwitcher({
       {open && (
         <ul className="absolute z-10 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg">
           {filtered.length === 0 ? (
-            <li className="px-4 py-3 text-sm text-gray-400">
-              Keine Treffer
-            </li>
+            <li className="px-4 py-3 text-sm text-gray-400">Keine Treffer</li>
           ) : (
             filtered.map((addr) => {
               const isActive = addr.id === activeId;
@@ -519,6 +523,7 @@ function UserMenu({ initials, name }: { initials: string; name: string }) {
           <Link
             href="/api/auth/logout"
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
+            prefetch={false}
           >
             <LogOut className="h-4 w-4" />
             Abmelden
@@ -634,8 +639,7 @@ export default function Home() {
       .then((data) => {
         const addresses: SavedAddress[] = data.addresses ?? [];
         setSavedAddresses(addresses);
-        const defaultAddr =
-          addresses.find((a) => a.is_default) ?? addresses[0];
+        const defaultAddr = addresses.find((a) => a.is_default) ?? addresses[0];
         if (defaultAddr) {
           setActiveAddressId(defaultAddr.id);
           fetchSchedule(defaultAddr.street, defaultAddr.house_number);
