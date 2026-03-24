@@ -1,7 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Trash, LogIn, UserPlus, LogOut } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import {
+  Trash,
+  LogIn,
+  UserPlus,
+  LogOut,
+  MapPin,
+  ChevronDown,
+} from "lucide-react";
+import Link from "next/link";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // ---------------------------------------------------------------------------
@@ -348,6 +356,60 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 // Main page
 // ---------------------------------------------------------------------------
 
+function UserMenu({ initials, name }: { initials: string; name: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative z-50">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 hover:bg-green-100"
+      >
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white">
+          {initials}
+        </div>
+        <span className="text-sm font-medium text-gray-700">{name}</span>
+        <ChevronDown
+          className={`h-3.5 w-3.5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-1.5 w-44 rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+          <Link
+            href="/addresses"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            <MapPin className="h-4 w-4 text-gray-400" />
+            Meine Adressen
+          </Link>
+          <div className="my-1 border-t border-gray-100" />
+          <a
+            href="/api/auth/logout"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
+          >
+            <LogOut className="h-4 w-4" />
+            Abmelden
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AuthSection() {
   const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
@@ -362,23 +424,10 @@ function AuthSection() {
       "?";
 
     return (
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white">
-            {initials}
-          </div>
-          <span className="text-sm font-medium text-gray-700">
-            {user.given_name ?? user.email}
-          </span>
-        </div>
-        <a
-          href="/api/auth/logout"
-          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-        >
-          <LogOut className="h-4 w-4" />
-          Abmelden
-        </a>
-      </div>
+      <UserMenu
+        initials={initials}
+        name={user.given_name ?? user.email ?? ""}
+      />
     );
   }
 
@@ -406,7 +455,9 @@ export default function Home() {
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [schedule, setSchedule] = useState<PickupSchedule | null>(null);
-  const [fallbackNumbers, setFallbackNumbers] = useState<HouseNumberEntry[] | null>(null);
+  const [fallbackNumbers, setFallbackNumbers] = useState<
+    HouseNumberEntry[] | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
