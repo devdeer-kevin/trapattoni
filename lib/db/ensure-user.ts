@@ -7,6 +7,6 @@ export async function ensureUser(
   await db`
     INSERT INTO users (kinde_id, email)
     VALUES (${kindeId}, ${email})
-    ON CONFLICT (kinde_id) DO NOTHING
+    ON CONFLICT (kinde_id) DO UPDATE SET email = EXCLUDED.email
   `;
 }
