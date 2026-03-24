@@ -38,6 +38,13 @@ type HouseNumberEntry = {
   sabStandplatzId: string;
 };
 
+type SavedAddress = {
+  id: string;
+  street: string;
+  house_number: string;
+  is_default: boolean;
+};
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -353,6 +360,118 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 }
 
 // ---------------------------------------------------------------------------
+// Address switcher (autocomplete dropdown)
+// ---------------------------------------------------------------------------
+
+function AddressSwitcher({
+  addresses,
+  activeId,
+  onSelect,
+}: {
+  addresses: SavedAddress[];
+  activeId: string | null;
+  onSelect: (addr: SavedAddress) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const active = addresses.find((a) => a.id === activeId) ?? null;
+
+  const filtered = query.trim()
+    ? addresses.filter((a) =>
+        `${a.street} ${a.house_number}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      )
+    : addresses;
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setQuery("");
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function handleSelect(addr: SavedAddress) {
+    onSelect(addr);
+    setOpen(false);
+    setQuery("");
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="flex items-center gap-2">
+        {/* Trigger / search input */}
+        <div className="relative flex-1">
+          <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={open ? query : (active ? `${active.street} ${active.house_number}` : "")}
+            placeholder="Adresse wählen..."
+            onFocus={() => setOpen(true)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpen(true);
+            }}
+            className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-9 pr-4 text-sm text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+          />
+        </div>
+        <Link
+          href="/addresses"
+          className="shrink-0 text-xs text-gray-400 hover:text-gray-600"
+        >
+          Adressen verwalten
+        </Link>
+      </div>
+
+      {/* Dropdown */}
+      {open && (
+        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg">
+          {filtered.length === 0 ? (
+            <li className="px-4 py-3 text-sm text-gray-400">
+              Keine Treffer
+            </li>
+          ) : (
+            filtered.map((addr) => {
+              const isActive = addr.id === activeId;
+              return (
+                <li
+                  key={addr.id}
+                  onClick={() => handleSelect(addr)}
+                  className={`flex cursor-pointer items-center gap-3 px-4 py-2.5 first:rounded-t-xl last:rounded-b-xl hover:bg-green-50 ${
+                    isActive ? "bg-green-50" : ""
+                  }`}
+                >
+                  <MapPin
+                    className={`h-4 w-4 shrink-0 ${isActive ? "text-green-500" : "text-gray-300"}`}
+                  />
+                  <span
+                    className={`text-sm ${isActive ? "font-semibold text-green-700" : "text-gray-700"}`}
+                  >
+                    {addr.street} {addr.house_number}
+                  </span>
+                  {addr.is_default && (
+                    <span className="ml-auto shrink-0 text-xs text-gray-400">
+                      Standard
+                    </span>
+                  )}
+                </li>
+              );
+            })
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
@@ -452,16 +571,25 @@ function AuthSection() {
 }
 
 export default function Home() {
+  const { isAuthenticated, isLoading: authLoading } = useKindeBrowserClient();
+
+  // Manual search state
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
-  const [schedule, setSchedule] = useState<PickupSchedule | null>(null);
   const [fallbackNumbers, setFallbackNumbers] = useState<
     HouseNumberEntry[] | null
   >(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [schedule, setSchedule] = useState<PickupSchedule | null>(null);
 
-  async function fetchSchedule(s: string, h: string) {
+  // Saved addresses state (null = not yet fetched)
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[] | null>(
+    null,
+  );
+  const [activeAddressId, setActiveAddressId] = useState<string | null>(null);
+
+  const fetchSchedule = useCallback(async (s: string, h: string) => {
     setLoading(true);
     setError(null);
     setFallbackNumbers(null);
@@ -495,6 +623,31 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Fetch saved addresses once auth is resolved, then auto-load the default
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return;
+
+    fetch("/api/v1/addresses")
+      .then((r) => r.json())
+      .then((data) => {
+        const addresses: SavedAddress[] = data.addresses ?? [];
+        setSavedAddresses(addresses);
+        const defaultAddr =
+          addresses.find((a) => a.is_default) ?? addresses[0];
+        if (defaultAddr) {
+          setActiveAddressId(defaultAddr.id);
+          fetchSchedule(defaultAddr.street, defaultAddr.house_number);
+        }
+      })
+      .catch(() => setSavedAddresses([]));
+  }, [authLoading, isAuthenticated, fetchSchedule]);
+
+  function handleSwitchAddress(addr: SavedAddress) {
+    if (addr.id === activeAddressId) return;
+    setActiveAddressId(addr.id);
+    fetchSchedule(addr.street, addr.house_number);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -502,6 +655,8 @@ export default function Home() {
     if (!street || !houseNumber) return;
     fetchSchedule(street, houseNumber);
   }
+
+  const hasSavedAddresses = savedAddresses && savedAddresses.length > 0;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -519,35 +674,46 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-lg px-4 py-8">
-        {/* Search form */}
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <StreetAutocomplete
-            value={street}
-            onChange={setStreet}
-            onSelect={(s) => {
-              setStreet(s);
-              setSchedule(null);
-              setFallbackNumbers(null);
-              setError(null);
-            }}
-          />
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={houseNumber}
-              placeholder="Hausnummer"
-              onChange={(e) => setHouseNumber(e.target.value)}
-              className="w-36 rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+        {/* Manual search form – hidden when the user has saved addresses */}
+        {!hasSavedAddresses && (
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <StreetAutocomplete
+              value={street}
+              onChange={setStreet}
+              onSelect={(s) => {
+                setStreet(s);
+                setSchedule(null);
+                setFallbackNumbers(null);
+                setError(null);
+              }}
             />
-            <button
-              type="submit"
-              disabled={!street || !houseNumber || loading}
-              className="flex-1 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-600 disabled:opacity-50"
-            >
-              {loading ? "Lädt..." : "Termine anzeigen"}
-            </button>
-          </div>
-        </form>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={houseNumber}
+                placeholder="Hausnummer"
+                onChange={(e) => setHouseNumber(e.target.value)}
+                className="w-36 rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              />
+              <button
+                type="submit"
+                disabled={!street || !houseNumber || loading}
+                className="flex-1 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-600 disabled:opacity-50"
+              >
+                {loading ? "Lädt..." : "Termine anzeigen"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Address switcher – shown when the user has saved addresses */}
+        {hasSavedAddresses && (
+          <AddressSwitcher
+            addresses={savedAddresses}
+            activeId={activeAddressId}
+            onSelect={handleSwitchAddress}
+          />
+        )}
 
         {/* Error */}
         {error && (
@@ -570,6 +736,18 @@ export default function Home() {
               >
                 {entry.number}
               </button>
+            ))}
+          </div>
+        )}
+
+        {/* Loading skeleton while the first schedule fetch is in progress */}
+        {loading && !schedule && (
+          <div className="mt-8 space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-2xl bg-gray-100"
+              />
             ))}
           </div>
         )}
