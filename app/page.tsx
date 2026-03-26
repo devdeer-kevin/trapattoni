@@ -7,6 +7,7 @@ import {
   UserPlus,
   LogOut,
   MapPin,
+  Route,
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
@@ -515,9 +516,19 @@ function UserMenu({ initials, name }: { initials: string; name: string }) {
             href="/addresses"
             onClick={() => setOpen(false)}
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+            prefetch={false}
           >
             <MapPin className="h-4 w-4 text-gray-400" />
             Meine Adressen
+          </Link>
+          <Link
+            href="/route"
+            onClick={() => setOpen(false)}
+            prefetch={false}
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            <Route className="h-4 w-4 text-gray-400" />
+            Meine Route
           </Link>
           <div className="my-1 border-t border-gray-100" />
           <Link
