@@ -53,33 +53,38 @@ type SavedAddress = {
 const WASTE_COLORS: Record<string, { bg: string; text: string; dot: string }> =
   {
     Restabfall: {
-      bg: "bg-gray-100",
-      text: "text-gray-700",
-      dot: "bg-gray-500",
+      bg: "bg-[#707D7D]/20",
+      text: "text-foreground",
+      dot: "bg-[#707D7D]",
     },
     Bioabfall: {
-      bg: "bg-amber-100",
-      text: "text-amber-800",
-      dot: "bg-amber-800",
+      bg: "bg-[#17876D]/25",
+      text: "text-foreground",
+      dot: "bg-[#17876D]",
     },
     Altpapier: {
-      bg: "bg-blue-100",
-      text: "text-blue-700",
-      dot: "bg-blue-500",
+      bg: "bg-[#AAC8C4]/30",
+      text: "text-foreground",
+      dot: "bg-[#AAC8C4]",
     },
     "Gelbe Tonne": {
-      bg: "bg-yellow-100",
-      text: "text-yellow-700",
-      dot: "bg-yellow-400",
+      bg: "bg-[#F5A623]/25",
+      text: "text-foreground",
+      dot: "bg-[#F5A623]",
+    },
+    Grünschnitt: {
+      bg: "bg-[#2CC295]/25",
+      text: "text-foreground",
+      dot: "bg-[#2CC295]",
     },
   };
 
 function getWasteColor(type: string) {
   return (
     WASTE_COLORS[type] ?? {
-      bg: "bg-gray-100",
-      text: "text-gray-700",
-      dot: "bg-gray-400",
+      bg: "bg-background-overlay",
+      text: "text-foreground-secondary",
+      dot: "bg-foreground-tertiary",
     }
   );
 }
@@ -173,13 +178,13 @@ function StreetAutocomplete({
         value={value}
         placeholder="Straße eingeben..."
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+        className="w-full rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       {loading && (
-        <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-green-400 border-t-transparent" />
+        <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       )}
       {suggestions.length > 0 && (
-        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
           {suggestions.map((s) => (
             <li
               key={s}
@@ -187,7 +192,7 @@ function StreetAutocomplete({
                 onSelect(s);
                 setSuggestions([]);
               }}
-              className="cursor-pointer px-4 py-2.5 text-sm text-gray-700 first:rounded-t-xl last:rounded-b-xl hover:bg-green-50"
+              className="cursor-pointer px-4 py-2.5 text-sm text-foreground-secondary first:rounded-t-xl last:rounded-b-xl hover:bg-accent-muted/20"
             >
               {s}
             </li>
@@ -234,27 +239,27 @@ function CalendarCard({
   const color = badge ? getWasteColor(badge) : null;
 
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm border border-gray-100">
+    <div className="flex items-center gap-4 rounded-2xl bg-background-subtle px-4 py-3 shadow-sm border border-border-subtle">
       {/* Trash icon in colored circle */}
       <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${color?.dot ?? "bg-gray-200"}`}
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${color?.dot ?? "bg-background-overlay"}`}
       >
-        <Trash className="h-5 w-5 text-white" />
+        <Trash className="h-5 w-5 text-foreground-inverse" />
       </div>
 
       {/* Date + waste type */}
       <div className="flex flex-col">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-foreground-tertiary">
           {dayLabel}, {formatDate(date)}
           {isToday && (
-            <span className="ml-1.5 font-semibold text-green-500">· Heute</span>
+            <span className="ml-1.5 font-semibold text-accent">· Heute</span>
           )}
         </span>
         {badge && (
-          <p className="text-sm font-semibold text-gray-800">{badge}</p>
+          <p className="text-sm font-semibold text-foreground">{badge}</p>
         )}
         {isHolidayShift && (
-          <p className="text-xs text-orange-500">
+          <p className="text-xs text-warning">
             ⚠ Feiertagsbedingt verschoben
           </p>
         )}
@@ -272,7 +277,7 @@ function MonthGroup({
 }) {
   return (
     <div>
-      <h3 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-widest text-gray-400">
+      <h3 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-widest text-foreground-tertiary">
         {month}
       </h3>
       <div className="flex flex-col gap-2">{children}</div>
@@ -300,7 +305,7 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 
   return (
     <div className="mt-8">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">
+      <h2 className="mb-4 text-lg font-semibold text-foreground">
         {schedule.address}
       </h2>
 
@@ -316,9 +321,9 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
                 isActive
                   ? tab === "Alle"
-                    ? "bg-gray-900 text-white"
-                    : `${color!.dot} text-white`
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-accent text-foreground-inverse"
+                    : `${color!.dot} text-foreground-inverse`
+                  : "bg-background-overlay text-foreground-secondary hover:bg-background-elevated"
               }`}
             >
               {tab}
@@ -329,7 +334,7 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 
       {/* Content */}
       {grouped.length === 0 ? (
-        <p className="mt-8 text-center text-sm text-gray-400">
+        <p className="mt-8 text-center text-sm text-foreground-tertiary">
           Keine bevorstehenden Termine.
         </p>
       ) : (
@@ -352,7 +357,7 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
       {activeTab !== "Alle" &&
         activeCollection &&
         activeCollection.frequency && (
-          <p className="mt-4 text-xs text-gray-400">
+          <p className="mt-4 text-xs text-foreground-tertiary">
             {activeCollection.frequency}
           </p>
         )}
@@ -410,7 +415,7 @@ function AddressSwitcher({
       <div className="flex items-center gap-2">
         {/* Trigger / search input */}
         <div className="relative flex-1">
-          <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-tertiary" />
           <input
             type="text"
             value={
@@ -426,12 +431,12 @@ function AddressSwitcher({
               setQuery(e.target.value);
               setOpen(true);
             }}
-            className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-9 pr-4 text-sm text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+            className="w-full rounded-xl border border-border bg-background-subtle py-3 pl-9 pr-4 text-sm text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <Link
           href="/addresses"
-          className="shrink-0 text-xs text-gray-400 hover:text-gray-600"
+          className="shrink-0 text-xs text-foreground-tertiary hover:text-foreground-secondary"
         >
           Adressen verwalten
         </Link>
@@ -439,9 +444,9 @@ function AddressSwitcher({
 
       {/* Dropdown */}
       {open && (
-        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
           {filtered.length === 0 ? (
-            <li className="px-4 py-3 text-sm text-gray-400">Keine Treffer</li>
+            <li className="px-4 py-3 text-sm text-foreground-tertiary">Keine Treffer</li>
           ) : (
             filtered.map((addr) => {
               const isActive = addr.id === activeId;
@@ -449,20 +454,20 @@ function AddressSwitcher({
                 <li
                   key={addr.id}
                   onClick={() => handleSelect(addr)}
-                  className={`flex cursor-pointer items-center gap-3 px-4 py-2.5 first:rounded-t-xl last:rounded-b-xl hover:bg-green-50 ${
-                    isActive ? "bg-green-50" : ""
+                  className={`flex cursor-pointer items-center gap-3 px-4 py-2.5 first:rounded-t-xl last:rounded-b-xl hover:bg-accent-muted/20 ${
+                    isActive ? "bg-accent-muted/20" : ""
                   }`}
                 >
                   <MapPin
-                    className={`h-4 w-4 shrink-0 ${isActive ? "text-green-500" : "text-gray-300"}`}
+                    className={`h-4 w-4 shrink-0 ${isActive ? "text-accent" : "text-foreground-tertiary"}`}
                   />
                   <span
-                    className={`text-sm ${isActive ? "font-semibold text-green-700" : "text-gray-700"}`}
+                    className={`text-sm ${isActive ? "font-semibold text-accent-secondary" : "text-foreground-secondary"}`}
                   >
                     {addr.street} {addr.house_number}
                   </span>
                   {addr.is_default && (
-                    <span className="ml-auto shrink-0 text-xs text-gray-400">
+                    <span className="ml-auto shrink-0 text-xs text-foreground-tertiary">
                       Standard
                     </span>
                   )}
@@ -499,41 +504,41 @@ function UserMenu({ initials, name }: { initials: string; name: string }) {
     <div ref={ref} className="relative z-50">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 hover:bg-green-100"
+        className="flex items-center gap-2 rounded-full bg-accent-muted/20 px-3 py-1.5 hover:bg-accent-muted/35"
       >
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-bold text-foreground-inverse">
           {initials}
         </div>
-        <span className="text-sm font-medium text-gray-700">{name}</span>
+        <span className="text-sm font-medium text-foreground-secondary">{name}</span>
         <ChevronDown
-          className={`h-3.5 w-3.5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 text-foreground-tertiary transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1.5 w-44 rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+        <div className="absolute right-0 mt-1.5 w-44 rounded-xl border border-border-subtle bg-background-subtle py-1 shadow-lg">
           <Link
             href="/addresses"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-secondary hover:bg-background"
             prefetch={false}
           >
-            <MapPin className="h-4 w-4 text-gray-400" />
+            <MapPin className="h-4 w-4 text-foreground-tertiary" />
             Meine Adressen
           </Link>
           <Link
             href="/route"
             onClick={() => setOpen(false)}
             prefetch={false}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-secondary hover:bg-background"
           >
-            <Route className="h-4 w-4 text-gray-400" />
+            <Route className="h-4 w-4 text-foreground-tertiary" />
             Meine Route
           </Link>
-          <div className="my-1 border-t border-gray-100" />
+          <div className="my-1 border-t border-border-subtle" />
           <Link
             href="/api/auth/logout"
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-tertiary hover:bg-background"
             prefetch={false}
           >
             <LogOut className="h-4 w-4" />
@@ -549,7 +554,7 @@ function AuthSection() {
   const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
   if (isLoading) {
-    return <div className="h-8 w-24 animate-pulse rounded-lg bg-gray-100" />;
+    return <div className="h-8 w-24 animate-pulse rounded-lg bg-background-overlay" />;
   }
 
   if (isAuthenticated && user) {
@@ -570,14 +575,14 @@ function AuthSection() {
     <div className="flex items-center gap-2">
       <Link
         href="/api/auth/login"
-        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-background-overlay"
       >
         <LogIn className="h-4 w-4" />
         Anmelden
       </Link>
       <Link
         href="/api/auth/register"
-        className="flex items-center gap-1.5 rounded-lg bg-green-500 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-green-600"
+        className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-foreground-inverse transition-colors hover:bg-accent-secondary"
       >
         <UserPlus className="h-4 w-4" />
         Registrieren
@@ -674,15 +679,15 @@ export default function Home() {
   const hasSavedAddresses = savedAddresses && savedAddresses.length > 0;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-3 shadow-sm">
+      <header className="bg-background-subtle border-b border-border-subtle px-4 py-3 shadow-sm">
         <div className="mx-auto flex max-w-lg items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900">
+            <h1 className="text-xl font-bold tracking-tight text-foreground">
               🗑️ Tonneraus
             </h1>
-            <p className="text-xs text-gray-400">Abfuhrkalender Magdeburg</p>
+            <p className="text-xs text-foreground-tertiary">Abfuhrkalender Magdeburg</p>
           </div>
           <AuthSection />
         </div>
@@ -708,12 +713,12 @@ export default function Home() {
                 value={houseNumber}
                 placeholder="Hausnummer"
                 onChange={(e) => setHouseNumber(e.target.value)}
-                className="w-36 rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-36 rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
               <button
                 type="submit"
                 disabled={!street || !houseNumber || loading}
-                className="flex-1 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-600 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-foreground-inverse shadow-sm transition-colors hover:bg-accent-secondary disabled:opacity-50"
               >
                 {loading ? "Lädt..." : "Termine anzeigen"}
               </button>
@@ -732,7 +737,7 @@ export default function Home() {
 
         {/* Error */}
         {error && (
-          <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+          <div className="mt-4 rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
             {error}
           </div>
         )}
@@ -747,7 +752,7 @@ export default function Home() {
                   setHouseNumber(entry.number);
                   fetchSchedule(street, entry.number);
                 }}
-                className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-green-50 hover:border-green-300"
+                className="rounded-lg border border-border bg-background-subtle px-3 py-1.5 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-accent-muted/20 hover:border-accent-secondary"
               >
                 {entry.number}
               </button>
@@ -761,7 +766,7 @@ export default function Home() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-16 animate-pulse rounded-2xl bg-gray-100"
+                className="h-16 animate-pulse rounded-2xl bg-background-overlay"
               />
             ))}
           </div>

@@ -56,13 +56,13 @@ type Action = "out" | "in";
 function ActionBadge({ action }: { action: Action }) {
   if (action === "out") {
     return (
-      <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 print:bg-transparent print:text-black print:font-bold">
+      <span className="inline-flex items-center rounded-full bg-warning/20 px-2.5 py-0.5 text-xs font-semibold text-warning print:bg-transparent print:text-black print:font-bold">
         Tonne raus
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 print:bg-transparent print:text-black">
+    <span className="inline-flex items-center rounded-full bg-accent-muted/35 px-2.5 py-0.5 text-xs font-semibold text-accent-secondary print:bg-transparent print:text-black">
       Tonne rein
     </span>
   );
@@ -83,18 +83,18 @@ function DaySection({
     <div className="mb-1">
       {/* Day header */}
       <div className="mb-1 flex items-baseline gap-2 px-1 print:mb-0.5">
-        <span className="text-sm font-semibold text-gray-700 print:text-xs">
+        <span className="text-sm font-semibold text-foreground-secondary print:text-xs">
           {formatDate(date)}
         </span>
-        <span className="text-xs text-gray-400 print:hidden">
+        <span className="text-xs text-foreground-tertiary print:hidden">
           {actionType === "out" ? "→ Tonne rausstellen" : "→ Tonne reinholen"}
         </span>
       </div>
 
       {/* Table */}
-      <table className="w-full border-collapse overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm print:rounded-none print:shadow-none">
+      <table className="w-full border-collapse overflow-hidden rounded-xl border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
         <thead className="print:hidden">
-          <tr className="border-b border-gray-100 bg-gray-50 text-left text-xs font-medium text-gray-500">
+          <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
             <th className="px-3 py-2 w-8">#</th>
             <th className="px-3 py-2">Adresse</th>
             <th className="px-3 py-2">Tonne</th>
@@ -105,15 +105,15 @@ function DaySection({
           {events.map((ev) => (
             <tr
               key={`${ev.addressId}-${ev.binType}-${actionType}`}
-              className="border-b border-gray-50 last:border-0 hover:bg-gray-50 print:border-gray-200"
+              className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
             >
-              <td className="px-3 py-2.5 text-xs text-gray-400 tabular-nums print:py-1 print:text-xs">
+              <td className="px-3 py-2.5 text-xs text-foreground-tertiary tabular-nums print:py-1 print:text-xs">
                 {ev.position + 1}
               </td>
-              <td className="px-3 py-2.5 text-sm text-gray-800 print:py-1 print:text-xs">
+              <td className="px-3 py-2.5 text-sm text-foreground print:py-1 print:text-xs">
                 {ev.street} {ev.houseNumber}
               </td>
-              <td className="px-3 py-2.5 text-sm text-gray-600 print:py-1 print:text-xs">
+              <td className="px-3 py-2.5 text-sm text-foreground-secondary print:py-1 print:text-xs">
                 {ev.binType}
               </td>
               <td className="px-3 py-2.5 print:py-1">
@@ -162,12 +162,12 @@ function WeekSection({
 
   return (
     <section className="mb-8 print:mb-4">
-      <h2 className="mb-3 text-base font-bold text-gray-900 print:mb-1 print:text-sm">
+      <h2 className="mb-3 text-base font-bold text-foreground print:mb-1 print:text-sm">
         {title}
       </h2>
 
       {isEmpty ? (
-        <p className="rounded-xl bg-gray-50 px-4 py-6 text-center text-sm text-gray-400 print:hidden">
+        <p className="rounded-xl bg-background px-4 py-6 text-center text-sm text-foreground-tertiary print:hidden">
           Keine Abholungen in dieser Woche.
         </p>
       ) : (
@@ -235,25 +235,25 @@ export default function RoutePage() {
         }
       `}</style>
 
-      <main className="min-h-screen bg-gray-50 print:bg-white">
+      <main className="min-h-screen bg-background print:bg-background-subtle">
         {/* Header – hidden on print */}
-        <header className="no-print sticky top-0 z-10 border-b border-gray-100 bg-white px-4 py-3 shadow-sm">
+        <header className="no-print sticky top-0 z-10 border-b border-border-subtle bg-background-subtle px-4 py-3 shadow-sm">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link
                 href="/"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-background-overlay"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-              <h1 className="text-base font-semibold text-gray-900">
+              <h1 className="text-base font-semibold text-foreground">
                 Wochenplan
               </h1>
             </div>
 
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
             >
               <Printer className="h-4 w-4" />
               Drucken
@@ -262,9 +262,9 @@ export default function RoutePage() {
         </header>
 
         {/* Print header – only visible when printing */}
-        <div className="hidden print:block px-4 pt-4 pb-2 border-b border-gray-200 mb-4">
-          <h1 className="text-lg font-bold text-gray-900">Wochenplan – Tonnen</h1>
-          <p className="text-xs text-gray-500">
+        <div className="hidden print:block px-4 pt-4 pb-2 border-b border-border mb-4">
+          <h1 className="text-lg font-bold text-foreground">Wochenplan – Tonnen</h1>
+          <p className="text-xs text-foreground-tertiary">
             Gedruckt am{" "}
             {new Date().toLocaleDateString("de-DE", {
               day: "2-digit",
@@ -281,7 +281,7 @@ export default function RoutePage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-24 animate-pulse rounded-2xl bg-gray-100"
+                  className="h-24 animate-pulse rounded-2xl bg-background-overlay"
                 />
               ))}
             </div>
@@ -289,7 +289,7 @@ export default function RoutePage() {
 
           {/* Error state */}
           {error && (
-            <div className="no-print rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="no-print rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
               {error}
             </div>
           )}

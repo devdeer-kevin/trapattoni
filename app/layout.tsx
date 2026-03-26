@@ -1,21 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit } from "next/font/google";
+import ThemeToggle from "@/app/components/theme-toggle";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "Tonneraus – Abfuhrkalender Magdeburg",
+  title: "TonnenRaus - Abfuhrkalender Magdeburg",
   description: "Abfuhrkalender für Magdeburg",
 };
+
+const themeInitScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("tonnenraus-theme");
+    var preferred = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+    var theme = stored === "light" || stored === "dark" ? stored : preferred;
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (_err) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -23,10 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="de" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className={`${outfit.variable} antialiased`}>
+        <ThemeToggle />
         {children}
       </body>
     </html>

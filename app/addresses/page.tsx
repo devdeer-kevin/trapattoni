@@ -68,13 +68,13 @@ function StreetAutocomplete({
         placeholder="Straße eingeben..."
         onChange={(e) => handleChange(e.target.value)}
         disabled={disabled}
-        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 disabled:opacity-50"
+        className="w-full rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
       />
       {loading && (
-        <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-green-400 border-t-transparent" />
+        <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       )}
       {suggestions.length > 0 && (
-        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 w-full rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
           {suggestions.map((s) => (
             <li
               key={s}
@@ -82,7 +82,7 @@ function StreetAutocomplete({
                 onSelect(s);
                 setSuggestions([]);
               }}
-              className="cursor-pointer px-4 py-2.5 text-sm text-gray-700 first:rounded-t-xl last:rounded-b-xl hover:bg-green-50"
+              className="cursor-pointer px-4 py-2.5 text-sm text-foreground-secondary first:rounded-t-xl last:rounded-b-xl hover:bg-accent-muted/20"
             >
               {s}
             </li>
@@ -107,13 +107,13 @@ function ConfirmDeleteDialog({
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-4 pb-8 sm:items-center">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="text-base font-semibold text-gray-900">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 px-4 pb-8 sm:items-center">
+      <div className="w-full max-w-sm rounded-2xl bg-background-subtle p-6 shadow-xl">
+        <h3 className="text-base font-semibold text-foreground">
           Adresse entfernen?
         </h3>
-        <p className="mt-2 text-sm text-gray-500">
-          <span className="font-medium text-gray-700">
+        <p className="mt-2 text-sm text-foreground-tertiary">
+          <span className="font-medium text-foreground-secondary">
             {address.street} {address.house_number}
           </span>{" "}
           wird aus deinen gespeicherten Adressen entfernt.
@@ -121,13 +121,13 @@ function ConfirmDeleteDialog({
         <div className="mt-5 flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="flex-1 rounded-xl border border-border py-2.5 text-sm font-medium text-foreground-secondary hover:bg-background"
           >
             Abbrechen
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white hover:bg-red-600"
+            className="flex-1 rounded-xl bg-error py-2.5 text-sm font-semibold text-foreground-inverse hover:bg-error/80"
           >
             Entfernen
           </button>
@@ -152,10 +152,10 @@ function AddressCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border bg-white px-4 py-4 shadow-sm transition-all ${
+      className={`rounded-2xl border bg-background-subtle px-4 py-4 shadow-sm transition-all ${
         address.is_default
-          ? "border-green-200 ring-1 ring-green-100"
-          : "border-gray-100"
+          ? "border-accent/40 ring-1 ring-accent/20"
+          : "border-border-subtle"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -163,26 +163,26 @@ function AddressCard({
         <div className="flex items-start gap-3">
           <div
             className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-              address.is_default ? "bg-green-100" : "bg-gray-100"
+              address.is_default ? "bg-accent-muted/35" : "bg-background-overlay"
             }`}
           >
             <MapPin
-              className={`h-4 w-4 ${address.is_default ? "text-green-600" : "text-gray-400"}`}
+              className={`h-4 w-4 ${address.is_default ? "text-accent-secondary" : "text-foreground-tertiary"}`}
             />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-sm font-semibold text-foreground">
               {address.street} {address.house_number}
             </p>
             {address.is_default ? (
-              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                <Star className="h-3 w-3 fill-green-500 text-green-500" />
+              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-accent-muted/35 px-2 py-0.5 text-xs font-medium text-accent-secondary">
+                <Star className="h-3 w-3 fill-accent text-accent" />
                 Standard
               </span>
             ) : (
               <button
                 onClick={() => onSetDefault(address.id)}
-                className="mt-1 text-xs text-gray-400 hover:text-green-600"
+                className="mt-1 text-xs text-foreground-tertiary hover:text-accent-secondary"
               >
                 Als Standard setzen
               </button>
@@ -193,7 +193,7 @@ function AddressCard({
         {/* Delete button */}
         <button
           onClick={() => onDelete(address)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-300 hover:bg-red-50 hover:text-red-500"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-error/10 hover:text-error"
           aria-label="Entfernen"
         >
           <Trash2 className="h-4 w-4" />
@@ -266,12 +266,12 @@ function AddAddressForm({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-border-subtle bg-background-subtle p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-900">Neue Adresse</h2>
+        <h2 className="text-sm font-semibold text-foreground">Neue Adresse</h2>
         <button
           onClick={onCancel}
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-background-overlay"
         >
           <X className="h-4 w-4" />
         </button>
@@ -288,19 +288,19 @@ function AddAddressForm({
         {/* House number picker – appears after a street is selected */}
         {loadingHouses && (
           <div className="flex justify-center py-3">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-green-400 border-t-transparent" />
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent" />
           </div>
         )}
 
         {houseEntries && houseEntries.length === 0 && (
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-tertiary">
             Keine Hausnummern für diese Straße gefunden.
           </p>
         )}
 
         {houseEntries && houseEntries.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-gray-500">
+            <p className="mb-2 text-xs font-medium text-foreground-tertiary">
               Hausnummer wählen
             </p>
             <div className="flex flex-wrap gap-2">
@@ -312,8 +312,8 @@ function AddAddressForm({
                   disabled={saving}
                   className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                     selected?.sabStandplatzId === entry.sabStandplatzId
-                      ? "border-green-400 bg-green-50 text-green-700"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50"
+                      ? "border-accent bg-accent-muted/20 text-accent-secondary"
+                      : "border-border bg-background-subtle text-foreground-secondary hover:border-accent-secondary hover:bg-accent-muted/20"
                   }`}
                 >
                   {entry.number}
@@ -328,7 +328,7 @@ function AddAddressForm({
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-600 disabled:opacity-50"
+            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-foreground-inverse shadow-sm transition-colors hover:bg-accent-secondary disabled:opacity-50"
           >
             {saving
               ? "Speichert..."
@@ -337,7 +337,7 @@ function AddAddressForm({
         )}
 
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">
+          <p className="rounded-xl bg-error/10 px-4 py-2.5 text-sm text-error">
             {error}
           </p>
         )}
@@ -427,22 +427,22 @@ export default function AddressesPage() {
   const atLimit = addresses.length >= 50;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 py-3 shadow-sm">
+      <header className="sticky top-0 z-10 border-b border-border-subtle bg-background-subtle px-4 py-3 shadow-sm">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <Link
             href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-background-overlay"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-base font-semibold text-gray-900">
+            <h1 className="text-base font-semibold text-foreground">
               Meine Adressen
             </h1>
             {!pageLoading && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-foreground-tertiary">
                 {addresses.length} / 50 gespeichert
               </p>
             )}
@@ -463,7 +463,7 @@ export default function AddressesPage() {
         {!pageLoading && !showAddForm && !atLimit && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-gray-200 bg-white py-4 text-sm font-medium text-gray-400 transition-colors hover:border-green-300 hover:text-green-500"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background-subtle py-4 text-sm font-medium text-foreground-tertiary transition-colors hover:border-accent-secondary hover:text-accent"
           >
             <Plus className="h-4 w-4" />
             Adresse hinzufügen
@@ -472,7 +472,7 @@ export default function AddressesPage() {
 
         {/* Fetch error */}
         {pageError && (
-          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+          <div className="rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
             {pageError}
           </div>
         )}
@@ -483,7 +483,7 @@ export default function AddressesPage() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="h-20 animate-pulse rounded-2xl bg-gray-100"
+                className="h-20 animate-pulse rounded-2xl bg-background-overlay"
               />
             ))}
           </div>
@@ -492,13 +492,13 @@ export default function AddressesPage() {
         {/* Empty state */}
         {!pageLoading && !pageError && addresses.length === 0 && !showAddForm && (
           <div className="flex flex-col items-center py-12 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <MapPin className="h-8 w-8 text-green-400" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-muted/20">
+              <MapPin className="h-8 w-8 text-accent" />
             </div>
-            <h2 className="mt-4 text-base font-semibold text-gray-900">
+            <h2 className="mt-4 text-base font-semibold text-foreground">
               Noch keine Adressen
             </h2>
-            <p className="mt-1 max-w-xs text-sm text-gray-400">
+            <p className="mt-1 max-w-xs text-sm text-foreground-tertiary">
               Füge deine Adresse hinzu, um den Abfuhrkalender schnell
               aufzurufen.
             </p>
@@ -521,7 +521,7 @@ export default function AddressesPage() {
 
         {/* Limit reached notice */}
         {!pageLoading && atLimit && (
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-foreground-tertiary">
             Maximale Anzahl von 50 Adressen erreicht.
           </p>
         )}
