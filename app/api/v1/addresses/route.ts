@@ -63,9 +63,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // The SAB system uses the street name as its street identifier
-  const sab_street_id: string = street;
-
   await ensureUser(kindeUser.id, kindeUser.email ?? "");
 
   const [user] = await db`
@@ -92,8 +89,10 @@ export async function POST(request: NextRequest) {
   if (!address) {
     [address] = await db`
       INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
-      VALUES (${street}, ${house_number}, ${sab_street_id}, ${sab_standplatz_id})
-      RETURNING id
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (sab_street_id, house_number)
+      DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id
+      RETURNING id;
     `;
   }
 
