@@ -82,20 +82,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Find or create the canonical address record (sab_standplatz_id is the unique key)
-  let [address] = await db`
-    SELECT id FROM addresses WHERE sab_standplatz_id = ${sab_standplatz_id}
+  // Find or create the canonical address record.
+  // The unique key is (sab_street_id, house_number); sab_standplatz_id is NOT
+  // unique — it identifies a waste-collection tour, not a single address.
+  const [address] = await db`
+    INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
+    VALUES (${street}, ${house_number}, ${street}, ${sab_standplatz_id})
+    ON CONFLICT (sab_street_id, house_number)
+    DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id
+    RETURNING id
   `;
-
-  if (!address) {
-    [address] = await db`
-      INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
-      VALUES (${street}, ${house_number}, ${street}, ${sab_standplatz_id})
-      ON CONFLICT (sab_street_id, house_number)
-      DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id
-      RETURNING id
-    `;
-  }
 
   // Prevent duplicate associations
   const [existing] = await db`
