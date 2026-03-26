@@ -90,10 +90,10 @@ export async function POST(request: NextRequest) {
   if (!address) {
     [address] = await db`
       INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
-      VALUES ($1, $2, $3, $4)
+      VALUES (${street}, ${house_number}, ${street}, ${sab_standplatz_id})
       ON CONFLICT (sab_street_id, house_number)
       DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id
-      RETURNING id;
+      RETURNING id
     `;
   }
 
