@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/db/ensure-user";
+import { syncPickupEvents } from "@/lib/sab/sync-pickup-events";
 
 // GET /api/v1/addresses – list all saved addresses for the authenticated user
 export async function GET() {
@@ -128,6 +129,12 @@ export async function POST(request: NextRequest) {
     JOIN addresses a ON a.id = ua.address_id
     WHERE ua.user_id = ${user.id} AND ua.address_id = ${address.id}
   `;
+
+  // Fire-and-forget: cache pickup events from the SAB API.
+  // Errors are logged inside syncPickupEvents and never surface here.
+  syncPickupEvents(address.id, street, house_number).catch((err) =>
+    console.error("[addresses POST] syncPickupEvents unexpected error:", err),
+  );
 
   return NextResponse.json({ address: newAddress }, { status: 201 });
 }
