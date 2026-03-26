@@ -9,14 +9,6 @@ import type { RouteEvent, RouteResponse } from "@/app/api/v1/route/route";
 // Date helpers (client-side)
 // ---------------------------------------------------------------------------
 
-const WEEKDAY_DE: Record<number, string> = {
-  1: "Montag",
-  2: "Dienstag",
-  3: "Mittwoch",
-  4: "Donnerstag",
-  5: "Freitag",
-};
-
 function parseLocalDate(iso: string): Date {
   return new Date(iso + "T00:00:00");
 }
@@ -28,11 +20,6 @@ function formatDate(iso: string): string {
     day: "2-digit",
     month: "2-digit",
   });
-}
-
-function shortDate(iso: string): string {
-  const d = parseLocalDate(iso);
-  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
 }
 
 /** Returns the ISO date string for the Monday of the week containing today. */
@@ -65,19 +52,6 @@ function nextWeekLabel(): string {
 // ---------------------------------------------------------------------------
 
 type Action = "out" | "in";
-
-type DisplayRow = RouteEvent & { action: Action };
-
-function buildRows(events: RouteEvent[]): DisplayRow[] {
-  const rows: DisplayRow[] = [];
-  for (const ev of events) {
-    // "Tonne raus" on the previous workday
-    rows.push({ ...ev, action: "out" });
-    // "Tonne rein" on the next workday
-    rows.push({ ...ev, action: "in" });
-  }
-  return rows;
-}
 
 function ActionBadge({ action }: { action: Action }) {
   if (action === "out") {
