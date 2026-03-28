@@ -169,7 +169,7 @@ function StreetAutocomplete({
         value={value}
         placeholder="Straße eingeben..."
         onChange={(e) => handleChange(e.target.value)}
-        className="w-full rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="w-full rounded-xl border border-border bg-background-subtle px-4 py-3 text-base text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
       />
       {loading && (
         <div className="absolute right-3 top-3.5 h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
