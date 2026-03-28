@@ -162,7 +162,9 @@ function AddressCard({
         <div className="flex items-start gap-3">
           <div
             className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-              address.is_default ? "bg-accent-muted/35" : "bg-background-overlay"
+              address.is_default
+                ? "bg-accent-muted/35"
+                : "bg-background-overlay"
             }`}
           >
             <MapPin
@@ -329,9 +331,7 @@ function AddAddressForm({
             disabled={saving}
             className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-foreground-inverse shadow-sm transition-colors hover:bg-accent-secondary disabled:opacity-50"
           >
-            {saving
-              ? "Speichert..."
-              : `${street} ${selected.number} speichern`}
+            {saving ? "Speichert..." : `${street} ${selected.number} speichern`}
           </button>
         )}
 
@@ -426,105 +426,106 @@ export default function AddressesPage() {
   const atLimit = addresses.length >= 50;
 
   return (
-    <div className="max-w-3xl px-8 py-8 space-y-4">
+    <div className="max-w-3xl md:px-8 px-4 py-4 space-y-4">
       <div className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
-        <h1 className="text-xl font-semibold text-foreground">Meine Adressen</h1>
+        <h1 className="text-xl font-semibold text-foreground">
+          Meine Adressen
+        </h1>
         {!pageLoading && (
           <span className="text-sm text-foreground-tertiary">
             {addresses.length} / 50
           </span>
         )}
       </div>
-        {/* Add form – always at the top */}
-        {showAddForm && (
-          <AddAddressForm
-            onSave={handleSave}
-            onCancel={() => setShowAddForm(false)}
-          />
-        )}
+      {/* Add form – always at the top */}
+      {showAddForm && (
+        <AddAddressForm
+          onSave={handleSave}
+          onCancel={() => setShowAddForm(false)}
+        />
+      )}
 
-        {/* "Add address" trigger button – shown when form is hidden and limit not reached */}
-        {!pageLoading && !showAddForm && !atLimit && (
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background-subtle py-4 text-sm font-medium text-foreground-tertiary transition-colors hover:border-accent-secondary hover:text-accent"
-          >
-            <Plus className="h-4 w-4" />
-            Adresse hinzufügen
-          </button>
-        )}
+      {/* "Add address" trigger button – shown when form is hidden and limit not reached */}
+      {!pageLoading && !showAddForm && !atLimit && (
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background-subtle py-4 text-sm font-medium text-foreground-tertiary transition-colors hover:border-accent-secondary hover:text-accent"
+        >
+          <Plus className="h-4 w-4" />
+          Adresse hinzufügen
+        </button>
+      )}
 
-        {/* Fetch error */}
-        {pageError && (
-          <div className="rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
-            {pageError}
+      {/* Fetch error */}
+      {pageError && (
+        <div className="rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
+          {pageError}
+        </div>
+      )}
+
+      {/* Loading skeletons */}
+      {pageLoading && (
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="h-20 animate-pulse rounded-2xl bg-background-overlay"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!pageLoading && !pageError && addresses.length === 0 && !showAddForm && (
+        <div className="flex flex-col items-center py-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-muted/20">
+            <MapPin className="h-8 w-8 text-accent" />
           </div>
-        )}
-
-        {/* Loading skeletons */}
-        {pageLoading && (
-          <div className="space-y-3">
-            {[1, 2].map((i) => (
-              <div
-                key={i}
-                className="h-20 animate-pulse rounded-2xl bg-background-overlay"
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!pageLoading && !pageError && addresses.length === 0 && !showAddForm && (
-          <div className="flex flex-col items-center py-12 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-muted/20">
-              <MapPin className="h-8 w-8 text-accent" />
-            </div>
-            <h2 className="mt-4 text-base font-semibold text-foreground">
-              Noch keine Adressen
-            </h2>
-            <p className="mt-1 max-w-xs text-sm text-foreground-tertiary">
-              Füge deine Adresse hinzu, um den Abfuhrkalender schnell
-              aufzurufen.
-            </p>
-          </div>
-        )}
-
-        {/* Address list */}
-        {!pageLoading && addresses.length > 0 && (
-          <div className="space-y-3">
-            {addresses.map((addr) => (
-              <AddressCard
-                key={addr.id}
-                address={addr}
-                onSetDefault={handleSetDefault}
-                onDelete={setConfirmTarget}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Remaining slots hint */}
-        {!pageLoading && !atLimit && addresses.length > 0 && (
-          <p className="text-sm text-foreground-tertiary mt-2">
-            Du hast noch {50 - addresses.length} freie Slots von 50.
+          <h2 className="mt-4 text-base font-semibold text-foreground">
+            Noch keine Adressen
+          </h2>
+          <p className="mt-1 max-w-xs text-sm text-foreground-tertiary">
+            Füge deine Adresse hinzu, um den Abfuhrkalender schnell aufzurufen.
           </p>
-        )}
+        </div>
+      )}
 
-        {/* Limit reached notice */}
-        {!pageLoading && atLimit && (
-          <p className="text-center text-xs text-foreground-tertiary">
-            Maximale Anzahl von 50 Adressen erreicht.
-          </p>
-        )}
+      {/* Address list */}
+      {!pageLoading && addresses.length > 0 && (
+        <div className="space-y-3">
+          {addresses.map((addr) => (
+            <AddressCard
+              key={addr.id}
+              address={addr}
+              onSetDefault={handleSetDefault}
+              onDelete={setConfirmTarget}
+            />
+          ))}
+        </div>
+      )}
 
-        {/* Delete confirmation dialog */}
-        {confirmTarget && (
-          <ConfirmDeleteDialog
-            address={confirmTarget}
-            onConfirm={() => handleDelete(confirmTarget)}
-            onCancel={() => setConfirmTarget(null)}
-          />
-        )}
-      </div>
+      {/* Remaining slots hint */}
+      {!pageLoading && !atLimit && addresses.length > 0 && (
+        <p className="text-sm text-foreground-tertiary mt-2">
+          Du hast noch {50 - addresses.length} freie Slots von 50.
+        </p>
+      )}
+
+      {/* Limit reached notice */}
+      {!pageLoading && atLimit && (
+        <p className="text-center text-xs text-foreground-tertiary">
+          Maximale Anzahl von 50 Adressen erreicht.
+        </p>
+      )}
+
+      {/* Delete confirmation dialog */}
+      {confirmTarget && (
+        <ConfirmDeleteDialog
+          address={confirmTarget}
+          onConfirm={() => handleDelete(confirmTarget)}
+          onCancel={() => setConfirmTarget(null)}
+        />
+      )}
+    </div>
   );
 }

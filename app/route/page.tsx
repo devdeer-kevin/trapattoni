@@ -246,9 +246,9 @@ export default function RoutePage() {
           </p>
         </div>
 
-        <div className="max-w-3xl px-8 py-8 print:px-2 print:py-0">
+        <div className="max-w-3xl md:px-8 px-4 py-4 print:px-2 print:py-0">
           {/* Print button */}
-          <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
+          <div className="no-print flex items-center justify-between pb-4 mb-6 border-b border-border-subtle">
             <h1 className="text-xl font-semibold text-foreground">
               Wochenplan
             </h1>

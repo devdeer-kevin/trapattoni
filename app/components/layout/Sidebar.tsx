@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogIn, LogOut, UserPlus } from "lucide-react";
@@ -27,12 +28,19 @@ export default function Sidebar() {
     >
       {/* Logo + App name */}
       <div
-        className="px-6 py-5"
+        className="px-6 py-5 flex items-center gap-3"
         style={{ borderBottom: "1px solid var(--border-subtle)" }}
       >
+        <Image
+          src="/logo-tonne.svg"
+          alt="TonneRaus Logo"
+          width={28}
+          height={34}
+          className="w-5"
+        />
         <span
           className="text-lg font-semibold"
-          style={{ color: "var(--text-primary)" }}
+          style={{ color: "var(--accent-primary)" }}
         >
           TonneRaus
         </span>

@@ -248,9 +248,7 @@ function CalendarCard({
           <p className="text-sm font-semibold text-foreground">{badge}</p>
         )}
         {isHolidayShift && (
-          <p className="text-xs text-warning">
-            ⚠ Feiertagsbedingt verschoben
-          </p>
+          <p className="text-xs text-warning">⚠ Feiertagsbedingt verschoben</p>
         )}
       </div>
     </div>
@@ -293,11 +291,7 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
   const grouped = groupByMonth(activeEntries);
 
   return (
-    <div className="mt-8">
-      <h2 className="mb-4 text-lg font-semibold text-foreground">
-        {schedule.address}
-      </h2>
-
+    <div className="mt-4">
       {/* Tabs */}
       <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
@@ -429,7 +423,9 @@ function AddressSwitcher({
       {open && (
         <ul className="absolute z-10 mt-1 w-full rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
           {filtered.length === 0 ? (
-            <li className="px-4 py-3 text-sm text-foreground-tertiary">Keine Treffer</li>
+            <li className="px-4 py-3 text-sm text-foreground-tertiary">
+              Keine Treffer
+            </li>
           ) : (
             filtered.map((addr) => {
               const isActive = addr.id === activeId;
@@ -547,7 +543,7 @@ export default function Home() {
     fetchSchedule(addr.street, addr.house_number);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.ChangeEvent) {
     e.preventDefault();
     if (!street || !houseNumber) return;
     fetchSchedule(street, houseNumber);
@@ -556,91 +552,87 @@ export default function Home() {
   const hasSavedAddresses = savedAddresses && savedAddresses.length > 0;
 
   return (
-    <div className="max-w-3xl px-8 py-8">
-        <header className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
-          <h1 className="text-xl font-semibold text-foreground">Kalender</h1>
-        </header>
-
-        {/* Manual search form – hidden when the user has saved addresses */}
-        {!hasSavedAddresses && (
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <StreetAutocomplete
-              value={street}
-              onChange={setStreet}
-              onSelect={(s) => {
-                setStreet(s);
-                setSchedule(null);
-                setFallbackNumbers(null);
-                setError(null);
-              }}
-            />
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={houseNumber}
-                placeholder="Hausnummer"
-                onChange={(e) => setHouseNumber(e.target.value)}
-                className="w-36 rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-              <button
-                type="submit"
-                disabled={!street || !houseNumber || loading}
-                className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-foreground-inverse shadow-sm transition-colors hover:bg-accent-secondary disabled:opacity-50"
-              >
-                {loading ? "Lädt..." : "Termine anzeigen"}
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Address switcher – shown when the user has saved addresses */}
-        {hasSavedAddresses && (
-          <AddressSwitcher
-            addresses={savedAddresses}
-            activeId={activeAddressId}
-            onSelect={handleSwitchAddress}
+    <div className="max-w-3xl px-4 md:px-8 pb-8 pt-4">
+      {/* Manual search form – hidden when the user has saved addresses */}
+      {!hasSavedAddresses && (
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <StreetAutocomplete
+            value={street}
+            onChange={setStreet}
+            onSelect={(s) => {
+              setStreet(s);
+              setSchedule(null);
+              setFallbackNumbers(null);
+              setError(null);
+            }}
           />
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="mt-4 rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
-            {error}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={houseNumber}
+              placeholder="Hausnummer"
+              onChange={(e) => setHouseNumber(e.target.value)}
+              className="w-36 rounded-xl border border-border bg-background-subtle px-4 py-3 text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+            <button
+              type="submit"
+              disabled={!street || !houseNumber || loading}
+              className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-foreground-inverse shadow-sm transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            >
+              {loading ? "Lädt..." : "Termine anzeigen"}
+            </button>
           </div>
-        )}
+        </form>
+      )}
 
-        {/* Fallback house number picker */}
-        {fallbackNumbers && fallbackNumbers.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {fallbackNumbers.map((entry) => (
-              <button
-                key={entry.sabStandplatzId}
-                onClick={() => {
-                  setHouseNumber(entry.number);
-                  fetchSchedule(street, entry.number);
-                }}
-                className="rounded-lg border border-border bg-background-subtle px-3 py-1.5 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-accent-muted/20 hover:border-accent-secondary"
-              >
-                {entry.number}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Address switcher – shown when the user has saved addresses */}
+      {hasSavedAddresses && (
+        <AddressSwitcher
+          addresses={savedAddresses}
+          activeId={activeAddressId}
+          onSelect={handleSwitchAddress}
+        />
+      )}
 
-        {/* Loading skeleton while the first schedule fetch is in progress */}
-        {loading && !schedule && (
-          <div className="mt-8 space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-16 animate-pulse rounded-2xl bg-background-overlay"
-              />
-            ))}
-          </div>
-        )}
+      {/* Error */}
+      {error && (
+        <div className="mt-4 rounded-xl bg-error/10 px-4 py-3 text-sm text-error">
+          {error}
+        </div>
+      )}
 
-        {/* Schedule */}
-        {schedule && <ScheduleView schedule={schedule} />}
-      </div>
+      {/* Fallback house number picker */}
+      {fallbackNumbers && fallbackNumbers.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {fallbackNumbers.map((entry) => (
+            <button
+              key={entry.sabStandplatzId}
+              onClick={() => {
+                setHouseNumber(entry.number);
+                fetchSchedule(street, entry.number);
+              }}
+              className="rounded-lg border border-border bg-background-subtle px-3 py-1.5 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-accent-muted/20 hover:border-accent-secondary"
+            >
+              {entry.number}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Loading skeleton while the first schedule fetch is in progress */}
+      {loading && !schedule && (
+        <div className="mt-8 space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 animate-pulse rounded-2xl bg-background-overlay"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Schedule */}
+      {schedule && <ScheduleView schedule={schedule} />}
+    </div>
   );
 }

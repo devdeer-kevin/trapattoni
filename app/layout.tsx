@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import Image from "next/image";
 import ThemeToggle from "@/app/components/theme-toggle";
 import Sidebar from "@/app/components/layout/Sidebar";
 import BottomNav from "@/app/components/layout/BottomNav";
@@ -56,12 +57,21 @@ export default function RootLayout({
               borderBottom: "1px solid var(--border-subtle)",
             }}
           >
-            <span
-              className="text-xl font-semibold"
-              style={{ color: "var(--text-primary)" }}
-            >
-              TonneRaus
-            </span>
+            <div className="flex items-center justify-center gap-2.5">
+              <Image
+                src="/logo-tonne.svg"
+                alt="TonneRaus Logo"
+                width={22}
+                height={27}
+                className="w-4"
+              />
+              <span
+                className="text-xl font-semibold"
+                style={{ color: "var(--accent-primary)" }}
+              >
+                TonneRaus
+              </span>
+            </div>
           </header>
           {children}
         </main>
