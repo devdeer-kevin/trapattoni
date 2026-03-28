@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Trash, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // ---------------------------------------------------------------------------
@@ -230,13 +230,11 @@ function CalendarCard({
   const color = badge ? getWasteColor(badge) : null;
 
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-background-subtle px-4 py-3 shadow-sm border border-border-subtle">
-      {/* Trash icon in colored circle */}
+    <div className="flex items-center gap-3 rounded-xl bg-background-subtle px-4 py-2.5 shadow-sm border border-border-subtle">
+      {/* Small colored dot */}
       <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${color?.dot ?? "bg-background-overlay"}`}
-      >
-        <Trash className="h-5 w-5 text-foreground-inverse" />
-      </div>
+        className={`h-2.5 w-2.5 shrink-0 rounded-full ${color?.dot ?? "bg-background-overlay"}`}
+      />
 
       {/* Date + waste type */}
       <div className="flex flex-col">
@@ -558,7 +556,11 @@ export default function Home() {
   const hasSavedAddresses = savedAddresses && savedAddresses.length > 0;
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
+    <div className="max-w-3xl px-8 py-8">
+        <header className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
+          <h1 className="text-xl font-semibold text-foreground">Kalender</h1>
+        </header>
+
         {/* Manual search form – hidden when the user has saved addresses */}
         {!hasSavedAddresses && (
           <form onSubmit={handleSubmit} className="space-y-3">

@@ -47,6 +47,22 @@ export default function RootLayout({
           className="ml-0 lg:ml-60 min-h-screen"
           style={{ paddingBottom: "calc(60px + env(safe-area-inset-bottom))" }}
         >
+          <header
+            className="lg:hidden sticky top-0 z-30 px-4 py-3"
+            style={{
+              background: "var(--surface-glass)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              borderBottom: "1px solid var(--border-subtle)",
+            }}
+          >
+            <span
+              className="text-xl font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              TonnenRaus
+            </span>
+          </header>
           {children}
         </main>
         <BottomNav />

@@ -94,7 +94,6 @@ function DaySection({
       <table className="w-full border-collapse overflow-hidden rounded-xl border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
-            <th className="px-3 py-2 w-8">#</th>
             <th className="px-3 py-2">Adresse</th>
             <th className="px-3 py-2">Tonne</th>
             <th className="px-3 py-2">Aktion</th>
@@ -106,9 +105,6 @@ function DaySection({
               key={`${ev.addressId}-${ev.binType}-${actionType}`}
               className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
             >
-              <td className="px-3 py-2.5 text-xs text-foreground-tertiary tabular-nums print:py-1 print:text-xs">
-                {ev.position + 1}
-              </td>
               <td className="px-3 py-2.5 text-sm text-foreground print:py-1 print:text-xs">
                 {ev.street} {ev.houseNumber}
               </td>
@@ -248,9 +244,9 @@ export default function RoutePage() {
           </p>
         </div>
 
-        <div className="mx-auto max-w-2xl px-4 py-6 print:px-2 print:py-0">
+        <div className="max-w-3xl px-8 py-6 print:px-2 print:py-0">
           {/* Print button */}
-          <div className="no-print flex items-center justify-between mb-6">
+          <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
             <h1 className="text-lg font-semibold text-foreground">Wochenplan</h1>
             <button
               onClick={() => window.print()}
