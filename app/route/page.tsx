@@ -55,13 +55,13 @@ type Action = "out" | "in";
 function ActionBadge({ action }: { action: Action }) {
   if (action === "out") {
     return (
-      <span className="inline-flex items-center rounded-full bg-warning/20 px-2.5 py-0.5 text-xs font-semibold text-warning print:bg-transparent print:text-black print:font-bold">
+      <span className="inline-flex items-center rounded-full bg-accent-muted/35 px-2.5 py-0.5 text-xs font-semibold text-accent-secondary print:bg-transparent print:text-black print:font-bold">
         Tonne raus
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-accent-muted/35 px-2.5 py-0.5 text-xs font-semibold text-accent-secondary print:bg-transparent print:text-black">
+    <span className="inline-flex items-center rounded-full bg-warning/20 px-2.5 py-0.5 text-xs font-semibold text-warning print:bg-transparent print:text-black">
       Tonne rein
     </span>
   );
