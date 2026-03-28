@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // ---------------------------------------------------------------------------
@@ -272,7 +272,101 @@ function MonthGroup({
   );
 }
 
-function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
+// ---------------------------------------------------------------------------
+// Calendar export button
+// ---------------------------------------------------------------------------
+
+function CalendarExportButton({
+  street,
+  houseNumber,
+  isAuthenticated,
+  accountType,
+}: {
+  street: string;
+  houseNumber: string;
+  isAuthenticated: boolean;
+  accountType: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
+  function triggerDownload(url: string) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setOpen(false);
+  }
+
+  const btnClass =
+    "flex items-center gap-1.5 rounded-lg border border-border bg-background-subtle px-3 py-1.5 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-accent-muted/20 hover:border-accent-secondary transition-colors";
+
+  // Business users don't get an export button for now.
+  if (isAuthenticated && accountType === "business") {
+    return null;
+  }
+
+  const publicUrl = (offset: boolean) =>
+    `/api/v1/calendar/export/public?street=${encodeURIComponent(street)}&house_number=${encodeURIComponent(houseNumber)}&offset=${offset}`;
+
+  if (!isAuthenticated) {
+    return (
+      <button
+        className={btnClass}
+        onClick={() => triggerDownload(publicUrl(false))}
+      >
+        <Calendar className="h-3.5 w-3.5" />
+        Kalender exportieren
+      </button>
+    );
+  }
+
+  // Private account: dropdown to choose actual date or day-before reminder.
+  return (
+    <div ref={ref} className="relative">
+      <button className={btnClass} onClick={() => setOpen((o) => !o)}>
+        <Calendar className="h-3.5 w-3.5" />
+        Kalender exportieren
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-10 mt-1 min-w-[180px] rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
+          <button
+            onClick={() => triggerDownload(publicUrl(false))}
+            className="w-full rounded-t-xl px-4 py-2.5 text-left text-sm text-foreground-secondary hover:bg-accent-muted/20"
+          >
+            Abfuhrtag
+          </button>
+          <button
+            onClick={() => triggerDownload(publicUrl(true))}
+            className="w-full rounded-b-xl px-4 py-2.5 text-left text-sm text-foreground-secondary hover:bg-accent-muted/20"
+          >
+            Einen Tag vorher
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ScheduleView({
+  schedule,
+  exportButton,
+}: {
+  schedule: PickupSchedule;
+  exportButton?: React.ReactNode;
+}) {
   const tabs = ["Alle", ...schedule.collections.map((c) => c.type)];
   const [activeTab, setActiveTab] = useState("Alle");
 
@@ -292,27 +386,30 @@ function ScheduleView({ schedule }: { schedule: PickupSchedule }) {
 
   return (
     <div className="mt-4">
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {tabs.map((tab) => {
-          const color = tab === "Alle" ? null : getWasteColor(tab);
-          const isActive = activeTab === tab;
-          return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                isActive
-                  ? tab === "Alle"
-                    ? "bg-accent text-foreground-inverse"
-                    : `${color!.dot} text-foreground-inverse`
-                  : "bg-background-overlay text-foreground-secondary hover:bg-background-elevated"
-              }`}
-            >
-              {tab}
-            </button>
-          );
-        })}
+      {/* Tabs + export button */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-2 pb-4 sm:pb-0">
+          {tabs.map((tab) => {
+            const color = tab === "Alle" ? null : getWasteColor(tab);
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  isActive
+                    ? tab === "Alle"
+                      ? "bg-accent text-foreground-inverse"
+                      : `${color!.dot} text-foreground-inverse`
+                    : "bg-background-overlay text-foreground-secondary hover:bg-background-elevated"
+                }`}
+              >
+                {tab}
+              </button>
+            );
+          })}
+        </div>
+        {exportButton}
       </div>
 
       {/* Content */}
@@ -467,6 +564,9 @@ function AddressSwitcher({
 export default function Home() {
   const { isAuthenticated, isLoading: authLoading } = useKindeBrowserClient();
 
+  // Account type fetched once the user is authenticated
+  const [accountType, setAccountType] = useState<string | null>(null);
+
   // Manual search state
   const [street, setStreet] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
@@ -519,9 +619,14 @@ export default function Home() {
     }
   }, []);
 
-  // Fetch saved addresses once auth is resolved, then auto-load the default
+  // Fetch saved addresses and account type once auth is resolved
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
+
+    fetch("/api/v1/user/me")
+      .then((r) => r.json())
+      .then((data) => setAccountType(data.account_type ?? "private"))
+      .catch(() => setAccountType("private"));
 
     fetch("/api/v1/addresses")
       .then((r) => r.json())
@@ -531,6 +636,8 @@ export default function Home() {
         const defaultAddr = addresses.find((a) => a.is_default) ?? addresses[0];
         if (defaultAddr) {
           setActiveAddressId(defaultAddr.id);
+          setStreet(defaultAddr.street);
+          setHouseNumber(defaultAddr.house_number);
           fetchSchedule(defaultAddr.street, defaultAddr.house_number);
         }
       })
@@ -540,6 +647,8 @@ export default function Home() {
   function handleSwitchAddress(addr: SavedAddress) {
     if (addr.id === activeAddressId) return;
     setActiveAddressId(addr.id);
+    setStreet(addr.street);
+    setHouseNumber(addr.house_number);
     fetchSchedule(addr.street, addr.house_number);
   }
 
@@ -632,7 +741,19 @@ export default function Home() {
       )}
 
       {/* Schedule */}
-      {schedule && <ScheduleView schedule={schedule} />}
+      {schedule && (
+        <ScheduleView
+          schedule={schedule}
+          exportButton={
+            <CalendarExportButton
+              street={street}
+              houseNumber={houseNumber}
+              isAuthenticated={!!isAuthenticated}
+              accountType={accountType}
+            />
+          }
+        />
+      )}
     </div>
   );
 }

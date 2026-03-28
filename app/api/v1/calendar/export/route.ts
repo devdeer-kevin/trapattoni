@@ -15,11 +15,10 @@ import {
 // user's saved addresses.
 //
 // Query params (private accounts only):
-//   ?mode=actual   – use the actual pickup date; no reminder shift applied
-//   ?mode=remind   – (default) shift date to the previous workday so the event
-//                    acts as a put-out reminder
+//   ?offset=false  – use the actual pickup date; no shift applied (Abfuhrtag)
+//   ?offset=true   – (default) shift to the previous workday as a put-out reminder
 //
-// Business accounts always use getBinOutDay regardless of the mode param.
+// Business accounts always use getBinOutDay regardless of the offset param.
 export async function GET(request: Request) {
   const { isAuthenticated, getUser } = getKindeServerSession();
 
@@ -59,29 +58,30 @@ export async function GET(request: Request) {
 
   const accountType: string = user.account_type;
   const { searchParams } = new URL(request.url);
+  // offset=false → actual pickup date; offset=true (default) → previous workday reminder.
   // Only meaningful for private accounts; business always uses getBinOutDay.
   const useActualDate =
-    accountType === "private" && searchParams.get("mode") === "actual";
+    accountType === "private" && searchParams.get("offset") === "false";
 
   const labels = useActualDate ? BIN_LABELS_ACTUAL : BIN_LABELS_REMIND;
 
   const events: ICalEvent[] = rows.map((row) => {
-      const pickupDate = new Date(`${row.pickup_date}T00:00:00Z`);
+    const pickupDate = new Date(`${row.pickup_date}T00:00:00Z`);
 
-      // Determine the event date based on account type and chosen mode.
-      const dtstart =
-        accountType === "business"
-          ? getBinOutDay(pickupDate)
-          : useActualDate
-            ? pickupDate
-            : getPrevWorkday(pickupDate);
+    // Determine the event date based on account type and chosen mode.
+    const dtstart =
+      accountType === "business"
+        ? getBinOutDay(pickupDate)
+        : useActualDate
+          ? pickupDate
+          : getPrevWorkday(pickupDate);
 
-      return {
-        uid: `${row.pickup_event_id}@tonnenraus.de`,
-        dtstart,
-        summary: labels[row.bin_type] ?? row.bin_type,
-        description: `${row.street} ${row.house_number}`,
-      };
+    return {
+      uid: `${row.pickup_event_id}@tonneraus`,
+      dtstart,
+      summary: labels[row.bin_type] ?? row.bin_type,
+      description: `${row.street} ${row.house_number}`,
+    };
   });
 
   return new NextResponse(buildIcal(events), {

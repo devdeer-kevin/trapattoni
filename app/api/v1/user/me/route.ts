@@ -6,6 +6,32 @@ import { ensureUser } from "@/lib/db/ensure-user";
 const ALLOWED_ACCOUNT_TYPES = ["private", "business"] as const;
 type AccountType = (typeof ALLOWED_ACCOUNT_TYPES)[number];
 
+// GET /api/v1/user/me – return the authenticated user's account_type
+export async function GET() {
+  const { isAuthenticated, getUser } = getKindeServerSession();
+
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const kindeUser = await getUser();
+  if (!kindeUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await ensureUser(kindeUser.id, kindeUser.email ?? "");
+
+  const [user] = await db`
+    SELECT account_type FROM users WHERE kinde_id = ${kindeUser.id}
+  `;
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ account_type: user.account_type });
+}
+
 // PATCH /api/v1/user/me – update the authenticated user's account_type
 export async function PATCH(request: NextRequest) {
   const { isAuthenticated, getUser } = getKindeServerSession();

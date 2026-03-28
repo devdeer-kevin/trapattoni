@@ -6,7 +6,10 @@ import { getPrevWorkday, getNextWorkday, getBinOutDay } from "@/lib/utils/workda
 
 // Returns the ISO date string (YYYY-MM-DD) for a Date in local time.
 function toISODate(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 // Returns Monday of the week containing the given date.
