@@ -34,7 +34,7 @@ export default function Sidebar() {
           className="text-lg font-semibold"
           style={{ color: "var(--text-primary)" }}
         >
-          TonnenRaus
+          TonneRaus
         </span>
       </div>
 

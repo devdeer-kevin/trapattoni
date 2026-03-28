@@ -1,6 +1,6 @@
-# TonnenRaus – Brand & Design System
+# TonneRaus – Brand & Design System
 
-> This document defines the complete visual identity for TonnenRaus.
+> This document defines the complete visual identity for TonneRaus.
 > It is the single source of truth for all UI implementation decisions.
 > Target quality: on par with Notion, Vercel, Linear.
 

@@ -12,7 +12,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "TonnenRaus - Abfuhrkalender Magdeburg",
+  title: "TonneRaus - Abfuhrkalender Magdeburg",
   description: "Abfuhrkalender für Magdeburg",
 };
 
@@ -60,7 +60,7 @@ export default function RootLayout({
               className="text-xl font-semibold"
               style={{ color: "var(--text-primary)" }}
             >
-              TonnenRaus
+              TonneRaus
             </span>
           </header>
           {children}

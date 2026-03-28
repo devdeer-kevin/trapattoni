@@ -426,9 +426,9 @@ export default function AddressesPage() {
   const atLimit = addresses.length >= 50;
 
   return (
-    <div className="max-w-3xl px-8 py-6 space-y-4">
-      <div className="flex items-center justify-between pb-6 border-b border-border-subtle">
-        <h1 className="text-lg font-semibold text-foreground">Meine Adressen</h1>
+    <div className="max-w-3xl px-8 py-8 space-y-4">
+      <div className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
+        <h1 className="text-xl font-semibold text-foreground">Meine Adressen</h1>
         {!pageLoading && (
           <span className="text-sm text-foreground-tertiary">
             {addresses.length} / 50

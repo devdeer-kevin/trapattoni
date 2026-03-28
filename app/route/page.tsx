@@ -244,10 +244,10 @@ export default function RoutePage() {
           </p>
         </div>
 
-        <div className="max-w-3xl px-8 py-6 print:px-2 print:py-0">
+        <div className="max-w-3xl px-8 py-8 print:px-2 print:py-0">
           {/* Print button */}
           <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
-            <h1 className="text-lg font-semibold text-foreground">Wochenplan</h1>
+            <h1 className="text-xl font-semibold text-foreground">Wochenplan</h1>
             <button
               onClick={() => window.print()}
               className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
