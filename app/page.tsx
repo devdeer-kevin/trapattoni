@@ -341,7 +341,7 @@ function CalendarExportButton({
         Kalender exportieren
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-10 mt-1 min-w-[180px] rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
+        <div className="absolute right-0 top-full z-10 mt-1 min-w-45 rounded-xl border border-border-subtle bg-background-subtle shadow-lg">
           <button
             onClick={() => triggerDownload(publicUrl(false))}
             className="w-full rounded-t-xl px-4 py-2.5 text-left text-sm text-foreground-secondary hover:bg-accent-muted/20"

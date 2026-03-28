@@ -1,10 +1,11 @@
 // Returns the most recent Monday–Friday before the given date.
 // If the given date is itself a workday, it still returns the previous one.
+// All arithmetic uses UTC to avoid timezone-dependent shifts.
 export function getPrevWorkday(date: Date): Date {
   const d = new Date(date);
   do {
-    d.setDate(d.getDate() - 1);
-  } while (d.getDay() === 0 || d.getDay() === 6); // skip Sunday (0) and Saturday (6)
+    d.setUTCDate(d.getUTCDate() - 1);
+  } while (d.getUTCDay() === 0 || d.getUTCDay() === 6); // skip Sunday (0) and Saturday (6)
   return d;
 }
 
@@ -13,8 +14,8 @@ export function getPrevWorkday(date: Date): Date {
 export function getNextWorkday(date: Date): Date {
   const d = new Date(date);
   do {
-    d.setDate(d.getDate() + 1);
-  } while (d.getDay() === 0 || d.getDay() === 6);
+    d.setUTCDate(d.getUTCDate() + 1);
+  } while (d.getUTCDay() === 0 || d.getUTCDay() === 6);
   return d;
 }
 
@@ -22,6 +23,6 @@ export function getNextWorkday(date: Date): Date {
 // Used for business users to calculate bin-out day.
 export function getBinOutDay(date: Date): Date {
   const d = new Date(date);
-  if (d.getDay() === 1) return d; // Monday → same day
+  if (d.getUTCDay() === 1) return d; // Monday → same day
   return getPrevWorkday(date);
 }

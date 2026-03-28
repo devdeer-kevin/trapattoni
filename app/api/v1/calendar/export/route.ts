@@ -10,6 +10,8 @@ import {
   type ICalEvent,
 } from "@/lib/ical/build-ical";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/v1/calendar/export
 // Returns an .ics file containing all-day pickup events for the authenticated
 // user's saved addresses.

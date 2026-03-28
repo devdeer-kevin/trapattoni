@@ -16,26 +16,26 @@ export type ICalEvent = {
 
 /** Plain labels used by the public (no-auth) endpoint. */
 export const BIN_LABELS: Record<string, string> = {
-  Restabfall: "🗑️ Restabfall",
+  Restabfall: "⚫️ Restabfall",
   "Gelbe Tonne": "🟡 Gelbe Tonne",
-  Bioabfall: "♻️ Bioabfall",
-  Altpapier: "📦 Altpapier",
+  Bioabfall: "🟢 Bioabfall",
+  Altpapier: "🔵 Altpapier",
 };
 
 /** Reminder labels (put-out day) used by the authenticated endpoint. */
 export const BIN_LABELS_REMIND: Record<string, string> = {
-  Restabfall: "🗑️ Restabfall rausstellen",
+  Restabfall: "⚫️ Restabfall rausstellen",
   "Gelbe Tonne": "🟡 Gelbe Tonne rausstellen",
-  Bioabfall: "♻️ Bioabfall rausstellen",
-  Altpapier: "📦 Altpapier rausstellen",
+  Bioabfall: "🟢 Bioabfall rausstellen",
+  Altpapier: "🔵 Altpapier rausstellen",
 };
 
 /** Actual-date labels (pickup day) used by the authenticated endpoint. */
 export const BIN_LABELS_ACTUAL: Record<string, string> = {
-  Restabfall: "🗑️ Restabfall wird abgeholt",
+  Restabfall: "⚫️ Restabfall wird abgeholt",
   "Gelbe Tonne": "🟡 Gelbe Tonne wird abgeholt",
-  Bioabfall: "♻️ Bioabfall wird abgeholt",
-  Altpapier: "📦 Altpapier wird abgeholt",
+  Bioabfall: "🟢 Bioabfall wird abgeholt",
+  Altpapier: "🔵 Altpapier wird abgeholt",
 };
 
 // ---------------------------------------------------------------------------

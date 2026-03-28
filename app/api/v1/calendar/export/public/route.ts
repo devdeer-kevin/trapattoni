@@ -8,6 +8,8 @@ import {
 } from "@/lib/ical/build-ical";
 import { getPrevWorkday } from "@/lib/utils/workdays";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/v1/calendar/export/public?street=...&house_number=...&offset=true|false
 // Fully public endpoint – no authentication required.
 // Fetches pickup dates live from the SAB API and returns an .ics file.
