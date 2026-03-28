@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/db/ensure-user";
-import { getPrevWorkday, getNextWorkday } from "@/lib/utils/workdays";
+import { getPrevWorkday, getNextWorkday, getBinOutDay } from "@/lib/utils/workdays";
 
 // Returns the ISO date string (YYYY-MM-DD) for a Date in local time.
 function toISODate(d: Date): string {
@@ -41,6 +41,7 @@ export type RouteEvent = {
 };
 
 export type RouteResponse = {
+  accountType: string;
   currentWeek: { [date: string]: RouteEvent[] };
   nextWeek: { [date: string]: RouteEvent[] };
 };
@@ -61,15 +62,18 @@ export async function GET() {
   await ensureUser(kindeUser.id, kindeUser.email ?? "");
 
   const [user] = await db`
-    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
+    SELECT id, account_type FROM users WHERE kinde_id = ${kindeUser.id}
   `;
 
   if (!user) {
     return NextResponse.json<RouteResponse>({
+      accountType: "private",
       currentWeek: {},
       nextWeek: {},
     });
   }
+
+  const accountType = (user.account_type as string) ?? "private";
 
   // Fetch all addresses for this user, ordered by the user's saved order.
   const userAddresses = await db`
@@ -85,7 +89,7 @@ export async function GET() {
   `;
 
   if (userAddresses.length === 0) {
-    return NextResponse.json<RouteResponse>({ currentWeek: {}, nextWeek: {} });
+    return NextResponse.json<RouteResponse>({ accountType, currentWeek: {}, nextWeek: {} });
   }
 
   const addressIds = userAddresses.map((a) => a.address_id);
@@ -142,8 +146,12 @@ export async function GET() {
       position: addr.position,
       pickupDate,
       binType: ev.bin_type as string,
-      binOut: toISODate(getPrevWorkday(pickupDateObj)),
-      binIn: toISODate(getNextWorkday(pickupDateObj)),
+      binOut: accountType === "business"
+        ? toISODate(getBinOutDay(pickupDateObj))
+        : toISODate(getPrevWorkday(pickupDateObj)),
+      binIn: accountType === "business"
+        ? pickupDate
+        : toISODate(getNextWorkday(pickupDateObj)),
     };
 
     // Assign to current or next week bucket based on the Monday boundaries.
@@ -158,5 +166,5 @@ export async function GET() {
     bucket[pickupDate].sort((a, b) => a.position - b.position);
   }
 
-  return NextResponse.json<RouteResponse>({ currentWeek, nextWeek });
+  return NextResponse.json<RouteResponse>({ accountType, currentWeek, nextWeek });
 }

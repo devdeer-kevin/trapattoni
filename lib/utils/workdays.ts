@@ -17,3 +17,11 @@ export function getNextWorkday(date: Date): Date {
   } while (d.getDay() === 0 || d.getDay() === 6);
   return d;
 }
+
+// Returns the same day if it's Monday, otherwise returns the previous workday.
+// Used for business users to calculate bin-out day.
+export function getBinOutDay(date: Date): Date {
+  const d = new Date(date);
+  if (d.getDay() === 1) return d; // Monday → same day
+  return getPrevWorkday(date);
+}
