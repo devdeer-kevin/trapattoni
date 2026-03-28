@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import ThemeToggle from "@/app/components/theme-toggle";
+import Sidebar from "@/app/components/layout/Sidebar";
+import BottomNav from "@/app/components/layout/BottomNav";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -40,8 +42,15 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className={`${outfit.variable} antialiased`}>
+        <Sidebar />
+        <main
+          className="ml-0 lg:ml-[240px] min-h-screen"
+          style={{ paddingBottom: "calc(60px + env(safe-area-inset-bottom))" }}
+        >
+          {children}
+        </main>
+        <BottomNav />
         <ThemeToggle />
-        {children}
       </body>
     </html>
   );

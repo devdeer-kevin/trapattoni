@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { MapPin, Star, Trash2, Plus, ArrowLeft, X } from "lucide-react";
-import Link from "next/link";
+import { MapPin, Star, Trash2, Plus, X } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -427,30 +426,15 @@ export default function AddressesPage() {
   const atLimit = addresses.length >= 50;
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-border-subtle bg-background-subtle px-4 py-3 shadow-sm">
-        <div className="mx-auto flex max-w-lg items-center gap-3">
-          <Link
-            href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-background-overlay"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-base font-semibold text-foreground">
-              Meine Adressen
-            </h1>
-            {!pageLoading && (
-              <p className="text-xs text-foreground-tertiary">
-                {addresses.length} / 50 gespeichert
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-lg px-4 py-6 space-y-4">
+    <div className="mx-auto max-w-lg px-4 py-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-foreground">Meine Adressen</h1>
+        {!pageLoading && (
+          <span className="text-sm text-foreground-tertiary">
+            {addresses.length} / 50
+          </span>
+        )}
+      </div>
         {/* Add form – always at the top */}
         {showAddForm && (
           <AddAddressForm
@@ -525,16 +509,15 @@ export default function AddressesPage() {
             Maximale Anzahl von 50 Adressen erreicht.
           </p>
         )}
-      </div>
 
-      {/* Delete confirmation dialog */}
-      {confirmTarget && (
-        <ConfirmDeleteDialog
-          address={confirmTarget}
-          onConfirm={() => handleDelete(confirmTarget)}
-          onCancel={() => setConfirmTarget(null)}
-        />
-      )}
-    </main>
+        {/* Delete confirmation dialog */}
+        {confirmTarget && (
+          <ConfirmDeleteDialog
+            address={confirmTarget}
+            onConfirm={() => handleDelete(confirmTarget)}
+            onCancel={() => setConfirmTarget(null)}
+          />
+        )}
+      </div>
   );
 }

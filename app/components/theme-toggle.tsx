@@ -1,24 +1,19 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Theme = "dark" | "light";
 
 const STORAGE_KEY = "tonnenraus-theme";
 
-function getCurrentTheme(): Theme {
-  const rootTheme = document.documentElement.getAttribute("data-theme");
-  return rootTheme === "light" ? "light" : "dark";
-}
-
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof document === "undefined") {
-      return "dark";
-    }
-    return getCurrentTheme();
-  });
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
+    const rootTheme = document.documentElement.getAttribute("data-theme");
+    setTheme(rootTheme === "light" ? "light" : "dark");
+  }, []);
 
   function toggleTheme() {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";

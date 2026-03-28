@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import {
-  Trash,
-  LogIn,
-  UserPlus,
-  LogOut,
-  MapPin,
-  Route,
-  ChevronDown,
-} from "lucide-react";
-import Link from "next/link";
+import { Trash, MapPin } from "lucide-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // ---------------------------------------------------------------------------
@@ -434,12 +425,6 @@ function AddressSwitcher({
             className="w-full rounded-xl border border-border bg-background-subtle py-3 pl-9 pr-4 text-sm text-foreground shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
-        <Link
-          href="/addresses"
-          className="shrink-0 text-xs text-foreground-tertiary hover:text-foreground-secondary"
-        >
-          Adressen verwalten
-        </Link>
       </div>
 
       {/* Dropdown */}
@@ -484,112 +469,6 @@ function AddressSwitcher({
 // ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
-
-function UserMenu({ initials, name }: { initials: string; name: string }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative z-50">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full bg-accent-muted/20 px-3 py-1.5 hover:bg-accent-muted/35"
-      >
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-bold text-foreground-inverse">
-          {initials}
-        </div>
-        <span className="text-sm font-medium text-foreground-secondary">{name}</span>
-        <ChevronDown
-          className={`h-3.5 w-3.5 text-foreground-tertiary transition-transform ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div className="absolute right-0 mt-1.5 w-44 rounded-xl border border-border-subtle bg-background-subtle py-1 shadow-lg">
-          <Link
-            href="/addresses"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-secondary hover:bg-background"
-            prefetch={false}
-          >
-            <MapPin className="h-4 w-4 text-foreground-tertiary" />
-            Meine Adressen
-          </Link>
-          <Link
-            href="/route"
-            onClick={() => setOpen(false)}
-            prefetch={false}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-secondary hover:bg-background"
-          >
-            <Route className="h-4 w-4 text-foreground-tertiary" />
-            Meine Route
-          </Link>
-          <div className="my-1 border-t border-border-subtle" />
-          <Link
-            href="/api/auth/logout"
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground-tertiary hover:bg-background"
-            prefetch={false}
-          >
-            <LogOut className="h-4 w-4" />
-            Abmelden
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AuthSection() {
-  const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
-
-  if (isLoading) {
-    return <div className="h-8 w-24 animate-pulse rounded-lg bg-background-overlay" />;
-  }
-
-  if (isAuthenticated && user) {
-    const initials =
-      `${user.given_name?.[0] ?? ""}${user.family_name?.[0] ?? ""}`.toUpperCase() ||
-      user.email?.[0]?.toUpperCase() ||
-      "?";
-
-    return (
-      <UserMenu
-        initials={initials}
-        name={user.given_name ?? user.email ?? ""}
-      />
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <Link
-        href="/api/auth/login"
-        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-background-overlay"
-      >
-        <LogIn className="h-4 w-4" />
-        Anmelden
-      </Link>
-      <Link
-        href="/api/auth/register"
-        className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-foreground-inverse transition-colors hover:bg-accent-secondary"
-      >
-        <UserPlus className="h-4 w-4" />
-        Registrieren
-      </Link>
-    </div>
-  );
-}
 
 export default function Home() {
   const { isAuthenticated, isLoading: authLoading } = useKindeBrowserClient();
@@ -679,21 +558,7 @@ export default function Home() {
   const hasSavedAddresses = savedAddresses && savedAddresses.length > 0;
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-background-subtle border-b border-border-subtle px-4 py-3 shadow-sm">
-        <div className="mx-auto flex max-w-lg items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground">
-              🗑️ Tonneraus
-            </h1>
-            <p className="text-xs text-foreground-tertiary">Abfuhrkalender Magdeburg</p>
-          </div>
-          <AuthSection />
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-lg px-4 py-8">
+    <div className="mx-auto max-w-lg px-4 py-8">
         {/* Manual search form – hidden when the user has saved addresses */}
         {!hasSavedAddresses && (
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -775,6 +640,5 @@ export default function Home() {
         {/* Schedule */}
         {schedule && <ScheduleView schedule={schedule} />}
       </div>
-    </main>
   );
 }

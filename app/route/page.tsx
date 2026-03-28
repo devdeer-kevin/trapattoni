@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ArrowLeft, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import type { RouteEvent, RouteResponse } from "@/app/api/v1/route/route";
 
 // ---------------------------------------------------------------------------
@@ -236,31 +235,6 @@ export default function RoutePage() {
       `}</style>
 
       <main className="min-h-screen bg-background print:bg-background-subtle">
-        {/* Header – hidden on print */}
-        <header className="no-print sticky top-0 z-10 border-b border-border-subtle bg-background-subtle px-4 py-3 shadow-sm">
-          <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-tertiary hover:bg-background-overlay"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-              <h1 className="text-base font-semibold text-foreground">
-                Wochenplan
-              </h1>
-            </div>
-
-            <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
-            >
-              <Printer className="h-4 w-4" />
-              Drucken
-            </button>
-          </div>
-        </header>
-
         {/* Print header – only visible when printing */}
         <div className="hidden print:block px-4 pt-4 pb-2 border-b border-border mb-4">
           <h1 className="text-lg font-bold text-foreground">Wochenplan – Tonnen</h1>
@@ -275,6 +249,17 @@ export default function RoutePage() {
         </div>
 
         <div className="mx-auto max-w-2xl px-4 py-6 print:px-2 print:py-0">
+          {/* Print button */}
+          <div className="no-print flex items-center justify-between mb-6">
+            <h1 className="text-lg font-semibold text-foreground">Wochenplan</h1>
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
+            >
+              <Printer className="h-4 w-4" />
+              Drucken
+            </button>
+          </div>
           {/* Loading skeletons */}
           {loading && (
             <div className="no-print space-y-4">
