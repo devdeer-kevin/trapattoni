@@ -44,7 +44,7 @@ export default function RootLayout({
       <body className={`${outfit.variable} antialiased`}>
         <Sidebar />
         <main
-          className="ml-0 lg:ml-[240px] min-h-screen"
+          className="ml-0 lg:ml-60 min-h-screen"
           style={{ paddingBottom: "calc(60px + env(safe-area-inset-bottom))" }}
         >
           {children}

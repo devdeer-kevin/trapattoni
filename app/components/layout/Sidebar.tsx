@@ -12,14 +12,14 @@ export default function Sidebar() {
 
   const initials =
     isAuthenticated && user
-      ? (`${user.given_name?.[0] ?? ""}${user.family_name?.[0] ?? ""}`.toUpperCase() ||
-          user.email?.[0]?.toUpperCase() ||
-          "?")
+      ? `${user.given_name?.[0] ?? ""}${user.family_name?.[0] ?? ""}`.toUpperCase() ||
+        user.email?.[0]?.toUpperCase() ||
+        "?"
       : null;
 
   return (
     <aside
-      className="fixed left-0 top-0 h-full w-[240px] hidden lg:flex flex-col z-40"
+      className="fixed left-0 top-0 h-full w-60 hidden lg:flex flex-col z-40"
       style={{
         borderRight: "1px solid var(--border-subtle)",
         background: "var(--bg-subtle)",
@@ -66,7 +66,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Auth section */}
-      <div className="px-4 py-4" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+      <div
+        className="px-4 py-4"
+        style={{ borderTop: "1px solid var(--border-subtle)" }}
+      >
         {isLoading ? (
           <div
             className="h-8 animate-pulse rounded-lg"
@@ -106,7 +109,10 @@ export default function Sidebar() {
             <Link
               href="/api/auth/login"
               className="flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors"
-              style={{ color: "var(--text-secondary)", background: "var(--bg-elevated)" }}
+              style={{
+                color: "var(--text-secondary)",
+                background: "var(--bg-elevated)",
+              }}
             >
               <LogIn size={15} />
               Anmelden
