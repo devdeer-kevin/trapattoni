@@ -91,7 +91,7 @@ function DaySection({
       </div>
 
       {/* Table */}
-      <table className="w-full border-collapse overflow-hidden rounded-xl border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+      <table className="w-full border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
             <th className="px-3 py-2">Adresse</th>
@@ -233,7 +233,9 @@ export default function RoutePage() {
       <main className="min-h-screen bg-background print:bg-background-subtle">
         {/* Print header – only visible when printing */}
         <div className="hidden print:block px-4 pt-4 pb-2 border-b border-border mb-4">
-          <h1 className="text-lg font-bold text-foreground">Wochenplan – Tonnen</h1>
+          <h1 className="text-lg font-bold text-foreground">
+            Wochenplan – Tonnen
+          </h1>
           <p className="text-xs text-foreground-tertiary">
             Gedruckt am{" "}
             {new Date().toLocaleDateString("de-DE", {
@@ -247,7 +249,9 @@ export default function RoutePage() {
         <div className="max-w-3xl px-8 py-8 print:px-2 print:py-0">
           {/* Print button */}
           <div className="no-print flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
-            <h1 className="text-xl font-semibold text-foreground">Wochenplan</h1>
+            <h1 className="text-xl font-semibold text-foreground">
+              Wochenplan
+            </h1>
             <button
               onClick={() => window.print()}
               className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
