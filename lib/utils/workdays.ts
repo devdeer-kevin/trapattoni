@@ -1,3 +1,10 @@
+// Returns the calendar day immediately before the given date (UTC).
+export function prevDay(date: Date): Date {
+  const d = new Date(date);
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d;
+}
+
 // Returns the most recent Monday–Friday before the given date.
 // If the given date is itself a workday, it still returns the previous one.
 // All arithmetic uses UTC to avoid timezone-dependent shifts.

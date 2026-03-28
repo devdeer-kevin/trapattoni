@@ -2,32 +2,32 @@ import { NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/db/ensure-user";
-import { getPrevWorkday, getNextWorkday, getBinOutDay } from "@/lib/utils/workdays";
+import { prevDay, getPrevWorkday, getNextWorkday, getBinOutDay } from "@/lib/utils/workdays";
 
-// Returns the ISO date string (YYYY-MM-DD) for a Date in local time.
+// Returns the ISO date string (YYYY-MM-DD) for a Date in UTC.
 function toISODate(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
-// Returns Monday of the week containing the given date.
+// Returns Monday of the week containing the given date (UTC).
 function weekStart(d: Date): Date {
-  const day = d.getDay(); // 0 = Sun … 6 = Sat
+  const day = d.getUTCDay(); // 0 = Sun … 6 = Sat
   const diff = day === 0 ? -6 : 1 - day; // shift to Monday
   const monday = new Date(d);
-  monday.setDate(d.getDate() + diff);
-  monday.setHours(0, 0, 0, 0);
+  monday.setUTCDate(d.getUTCDate() + diff);
+  monday.setUTCHours(0, 0, 0, 0);
   return monday;
 }
 
-// Returns Friday of the week containing the given date.
+// Returns Friday of the week containing the given date (UTC).
 function weekEnd(d: Date): Date {
   const monday = weekStart(d);
   const friday = new Date(monday);
-  friday.setDate(monday.getDate() + 4);
-  friday.setHours(23, 59, 59, 999);
+  friday.setUTCDate(monday.getUTCDate() + 4);
+  friday.setUTCHours(23, 59, 59, 999);
   return friday;
 }
 
@@ -99,7 +99,7 @@ export async function GET() {
 
   // Determine the date range: Mon of current week … Fri of next week.
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   const rangeStart = weekStart(today);
   const rangeEnd = weekEnd(new Date(rangeStart.getTime() + 7 * 24 * 60 * 60 * 1000));
 
@@ -140,7 +140,7 @@ export async function GET() {
     if (!addr) continue;
 
     const pickupDate = ev.pickup_date as string; // YYYY-MM-DD
-    const pickupDateObj = new Date(pickupDate + "T00:00:00");
+    const pickupDateObj = new Date(pickupDate + "T00:00:00Z");
 
     const routeEvent: RouteEvent = {
       addressId: Number(ev.address_id),
@@ -151,7 +151,7 @@ export async function GET() {
       binType: ev.bin_type as string,
       binOut: accountType === "business"
         ? toISODate(getBinOutDay(pickupDateObj))
-        : toISODate(getPrevWorkday(pickupDateObj)),
+        : toISODate(prevDay(pickupDateObj)),
       binIn: accountType === "business"
         ? pickupDate
         : toISODate(getNextWorkday(pickupDateObj)),

@@ -2,7 +2,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/db/ensure-user";
-import { getBinOutDay, getPrevWorkday } from "@/lib/utils/workdays";
+import { prevDay, getBinOutDay } from "@/lib/utils/workdays";
 import {
   buildIcal,
   BIN_LABELS_REMIND,
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
         ? getBinOutDay(pickupDate)
         : useActualDate
           ? pickupDate
-          : getPrevWorkday(pickupDate);
+          : prevDay(pickupDate);
 
     return {
       uid: `${row.pickup_event_id}@tonneraus`,

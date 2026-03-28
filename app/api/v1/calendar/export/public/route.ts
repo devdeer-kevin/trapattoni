@@ -6,7 +6,7 @@ import {
   BIN_LABELS_REMIND,
   type ICalEvent,
 } from "@/lib/ical/build-ical";
-import { getPrevWorkday } from "@/lib/utils/workdays";
+import { prevDay } from "@/lib/utils/workdays";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       const pickupDate = new Date(`${entry.date}T00:00:00Z`);
       return {
         uid: `${entry.date}-${collection.type}@tonneraus`,
-        dtstart: applyOffset ? getPrevWorkday(pickupDate) : pickupDate,
+        dtstart: applyOffset ? prevDay(pickupDate) : pickupDate,
         summary: labels[collection.type] ?? collection.type,
         description: `${street} ${houseNumber}`,
       };
