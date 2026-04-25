@@ -1,0 +1,614 @@
+[
+  {
+    "stadtteil": "Alt Olvenstedt",
+    "strasse": "Poststraße",
+    "termine": [
+      { "datum": "2026-02-11", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-13", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-12", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-11", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Alte Neustadt",
+    "strasse": "Alemannstraße / Gutenbergstraße",
+    "termine": [
+      { "datum": "2026-02-09", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-11", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-10", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-09", "wochentag": "Montag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Alte Neustadt",
+    "strasse": "Gardeleger Straße / Rothenseer Straße",
+    "termine": [
+      { "datum": "2026-02-16", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-18", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-17", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-16", "wochentag": "Montag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Alte Neustadt",
+    "strasse": "Hohenstaufenring / Hohepfortestraße",
+    "termine": [
+      { "datum": "2026-02-02", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-04", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-03", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-02", "wochentag": "Montag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Altstadt",
+    "strasse": "Regierungsstraße (am Kloster Unser Lieben Frauen)",
+    "termine": [
+      { "datum": "2026-02-24", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-26", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-25", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-24", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Altstadt",
+    "strasse": "Stresemannstraße / Mindenstraße",
+    "termine": [
+      { "datum": "2026-02-04", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-06", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-05", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-04", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Altstadt",
+    "strasse": "Weitlingstraße",
+    "termine": [
+      { "datum": "2026-02-11", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-02-25", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-13", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-27", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-12", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-26", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-11", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-25", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Barleber See",
+    "strasse": "Parkplatz am Schiffshebewerk",
+    "termine": [
+      { "datum": "2026-06-03", "wochentag": "Mittwoch", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-30", "wochentag": "Montag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Beyendorf",
+    "strasse": "Bäckergasse",
+    "termine": [
+      { "datum": "2026-05-21", "wochentag": "Donnerstag", "von": "13:45", "bis": "14:15" },
+      { "datum": "2026-11-19", "wochentag": "Donnerstag", "von": "13:45", "bis": "14:15" }
+    ]
+  },
+  {
+    "stadtteil": "Buckau",
+    "strasse": "Am Buckauer Wasserwerk (Wertstoffcontainer)",
+    "termine": [
+      { "datum": "2026-02-17", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-19", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-18", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-17", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Buckau",
+    "strasse": "Brauereistraße",
+    "termine": [
+      { "datum": "2026-02-13", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-15", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-14", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-13", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Calenberge",
+    "strasse": "am Kriegerdenkmal",
+    "termine": [
+      { "datum": "2026-02-19", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-20", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Cracau",
+    "strasse": "Friedrich-Ebert-Straße / Brandtstraße",
+    "termine": [
+      { "datum": "2026-02-05", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-07", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-06", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-05", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Cracau",
+    "strasse": "Pechauer Platz / Klusdamm",
+    "termine": [
+      { "datum": "2026-02-09", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-11", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-10", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-09", "wochentag": "Montag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Cracau",
+    "strasse": "Pretziner Weg / Schwarzkopfweg",
+    "termine": [
+      { "datum": "2026-02-11", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-13", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-12", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-11", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Cracau",
+    "strasse": "Puppendorfer Privatweg / Sülzwiesen-Privatweg",
+    "termine": [
+      { "datum": "2026-06-03", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-30", "wochentag": "Montag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Cracau",
+    "strasse": "Zuckerbusch / Cracauer Straße (vor der Schule)",
+    "termine": [
+      { "datum": "2026-02-25", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-27", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-26", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-25", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Diesdorf",
+    "strasse": "Alt Diesdorf / Hannoversche Straße",
+    "termine": [
+      { "datum": "2026-02-16", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-18", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-17", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-16", "wochentag": "Montag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Diesdorf",
+    "strasse": "Alt Diesdorf / Kreipestraße (an der Feuerwache)",
+    "termine": [
+      { "datum": "2026-02-06", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-08", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-07", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-06", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Diesdorf",
+    "strasse": "Hohendodeleber Weg / Meyendorfer Weg",
+    "termine": [
+      { "datum": "2026-02-20", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-22", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-21", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-20", "wochentag": "Freitag", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Fermersleben",
+    "strasse": "Eggersdorfer Straße / Friedrich-List-Straße",
+    "termine": [
+      { "datum": "2026-02-23", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-06-01", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-24", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-23", "wochentag": "Montag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Hopfengarten",
+    "strasse": "Hopfenbreite / Hopfenplatz",
+    "termine": [
+      { "datum": "2026-02-23", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-06-01", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-24", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-23", "wochentag": "Montag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Kannenstieg",
+    "strasse": "Hans-Grundig-Straße (Höhe Hausnummer 5, Parkplatz)",
+    "termine": [
+      { "datum": "2026-02-12", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-06-02", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-13", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-12", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Leipziger Straße",
+    "strasse": "Güstener Straße",
+    "termine": [
+      { "datum": "2026-02-04", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-06", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-05", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-04", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Leipziger Straße",
+    "strasse": "Helmholtzstraße / Schäfferstraße (Eingang Gartensparte)",
+    "termine": [
+      { "datum": "2026-02-05", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-07", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-06", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-05", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Lemsdorf",
+    "strasse": "Ballenstedter Straße",
+    "termine": [
+      { "datum": "2026-02-12", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-06-02", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-13", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-12", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Neu Olvenstedt",
+    "strasse": "Olvenstedter Scheid / Scharnhorstring (Parkplatz hinter der Kaufhalle)",
+    "termine": [
+      { "datum": "2026-02-06", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-08", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-07", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-06", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Neu Olvenstedt",
+    "strasse": "Roggengrund (Wendeplatz)",
+    "termine": [
+      { "datum": "2026-02-20", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-22", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-21", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-20", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Neue Neustadt",
+    "strasse": "Abendstraße / Ecke Moritzstraße",
+    "termine": [
+      { "datum": "2026-02-24", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-26", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-25", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-24", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Neue Neustadt",
+    "strasse": "Hospitalstraße / Schmidtstraße",
+    "termine": [
+      { "datum": "2026-02-26", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-28", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-27", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-26", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Neue Neustadt",
+    "strasse": "Ohrestraße",
+    "termine": [
+      { "datum": "2026-02-26", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-28", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-27", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-26", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Neustädter Feld",
+    "strasse": "Crucigerstraße / Resewitzstraße",
+    "termine": [
+      { "datum": "2026-02-25", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-27", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-26", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-25", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Neustädter Feld",
+    "strasse": "Milchweg / Burgstaller Weg",
+    "termine": [
+      { "datum": "2026-02-27", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-29", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-28", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-27", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Neustädter See",
+    "strasse": "Albert-Schweitzer-Straße / Dr.-Grosz-Straße",
+    "termine": [
+      { "datum": "2026-02-24", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-26", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-25", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-24", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Neustädter See",
+    "strasse": "Salvador-Allende-Straße (vor der Schule)",
+    "termine": [
+      { "datum": "2026-02-12", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-06-02", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-13", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-12", "wochentag": "Donnerstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Nordwest",
+    "strasse": "Boquet-Graseweg / Holzweg (neben der Kaufhalle)",
+    "termine": [
+      { "datum": "2026-02-04", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-06", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-05", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-04", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Ottersleben",
+    "strasse": "Frankefelde / Eichplatz",
+    "termine": [
+      { "datum": "2026-02-20", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-22", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-21", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-20", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Ottersleben",
+    "strasse": "Harro-Schulze-Boysen-Straße / Klinkbachstraße",
+    "termine": [
+      { "datum": "2026-02-27", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-29", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-28", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-27", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Pechau",
+    "strasse": "Am See 12, Revierförsterei",
+    "termine": [
+      { "datum": "2026-02-19", "wochentag": "Donnerstag", "von": "15:15", "bis": "16:00" },
+      { "datum": "2026-08-20", "wochentag": "Donnerstag", "von": "15:15", "bis": "16:00" }
+    ]
+  },
+  {
+    "stadtteil": "Randau",
+    "strasse": "Zur Kreuzhorst / Randauer Dorfstraße",
+    "termine": [
+      { "datum": "2026-02-19", "wochentag": "Donnerstag", "von": "14:00", "bis": "14:45" },
+      { "datum": "2026-08-20", "wochentag": "Donnerstag", "von": "14:00", "bis": "14:45" }
+    ]
+  },
+  {
+    "stadtteil": "Reform",
+    "strasse": "Apollostraße / Werner-Seelenbinder-Straße",
+    "termine": [
+      { "datum": "2026-02-03", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-02-18", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-05", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-20", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-04", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-19", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-03", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-18", "wochentag": "Mittwoch", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Reform",
+    "strasse": "Brenneckestraße / Okerstraße",
+    "termine": [
+      { "datum": "2026-02-03", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-05", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-04", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-03", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Reform",
+    "strasse": "Planetenweg / Siriusweg",
+    "termine": [
+      { "datum": "2026-02-10", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-12", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-11", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-10", "wochentag": "Dienstag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Rothensee",
+    "strasse": "Jersleber Straße (Parkplatz)",
+    "termine": [
+      { "datum": "2026-02-02", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-04", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-03", "wochentag": "Montag", "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-02", "wochentag": "Montag", "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Salbke",
+    "strasse": "Beyendorfer Straße / Sülldorfer Straße",
+    "termine": [
+      { "datum": "2026-05-21", "wochentag": "Donnerstag", "von": "15:45", "bis": "16:15" },
+      { "datum": "2026-11-19", "wochentag": "Donnerstag", "von": "15:45", "bis": "16:15" }
+    ]
+  },
+  {
+    "stadtteil": "Salbke",
+    "strasse": "Klosterhof (Einmündung Alt Salbke)",
+    "termine": [
+      { "datum": "2026-02-13", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-05-15", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-08-14", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-13", "wochentag": "Freitag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Salbke",
+    "strasse": "Wolmirsleber Weg / Am Wellenberge",
+    "termine": [
+      { "datum": "2026-02-17", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-19", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-18", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-17", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Sohlen",
+    "strasse": "Unter der Wiesche (Bushaltestelle)",
+    "termine": [
+      { "datum": "2026-05-21", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:30" },
+      { "datum": "2026-11-19", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:30" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld Ost",
+    "strasse": "Herderstraße / Uhlichstraße (am Parkplatz)",
+    "termine": [
+      { "datum": "2026-02-05", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-02-16", "wochentag": "Montag",     "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-05-07", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-18", "wochentag": "Montag",     "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-08-06", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-17", "wochentag": "Montag",     "von": "14:30", "bis": "15:15" },
+      { "datum": "2026-11-05", "wochentag": "Donnerstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-16", "wochentag": "Montag",     "von": "14:30", "bis": "15:15" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld Ost",
+    "strasse": "Liebermannstraße / Alexander-Puschkin-Straße",
+    "termine": [
+      { "datum": "2026-02-03", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-05", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-04", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-03", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld Ost",
+    "strasse": "Schellheimerplatz (an den Wertstoffcontainern)",
+    "termine": [
+      { "datum": "2026-02-10", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-12", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-11", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-10", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld West",
+    "strasse": "Harsdorfer Platz / Endhaltestelle",
+    "termine": [
+      { "datum": "2026-02-18", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-02-27", "wochentag": "Freitag",  "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-20", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-29", "wochentag": "Freitag",  "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-19", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-28", "wochentag": "Freitag",  "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-18", "wochentag": "Mittwoch", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-27", "wochentag": "Freitag",  "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld West",
+    "strasse": "Spielhagenstraße / Beimsstraße",
+    "termine": [
+      { "datum": "2026-02-02", "wochentag": "Montag",   "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-02-18", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-05-04", "wochentag": "Montag",   "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-20", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-08-03", "wochentag": "Montag",   "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-19", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" },
+      { "datum": "2026-11-02", "wochentag": "Montag",   "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-18", "wochentag": "Mittwoch", "von": "14:00", "bis": "14:30" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld West",
+    "strasse": "Steinbergstraße (Wertstoffcontainer)",
+    "termine": [
+      { "datum": "2026-02-26", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-28", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-27", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-26", "wochentag": "Donnerstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Stadtfeld West",
+    "strasse": "Vogelbreite / Meisenstieg",
+    "termine": [
+      { "datum": "2026-02-13", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-15", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-14", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-13", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Sudenburg",
+    "strasse": "Ernst-Toller-Straße (an den Wertstoffcontainern)",
+    "termine": [
+      { "datum": "2026-02-06", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-05-08", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-08-07", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" },
+      { "datum": "2026-11-06", "wochentag": "Freitag", "von": "15:00", "bis": "15:30" }
+    ]
+  },
+  {
+    "stadtteil": "Sudenburg",
+    "strasse": "Jordanstraße (zwischen Sudenburger Wuhne und Holbeinstraße)",
+    "termine": [
+      { "datum": "2026-02-23", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-06-01", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-24", "wochentag": "Montag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-23", "wochentag": "Montag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Sudenburg",
+    "strasse": "Lemsdorfer Weg / Hakeborner Straße",
+    "termine": [
+      { "datum": "2026-02-17", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-05-19", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-08-18", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" },
+      { "datum": "2026-11-17", "wochentag": "Dienstag", "von": "16:00", "bis": "16:45" }
+    ]
+  },
+  {
+    "stadtteil": "Werder",
+    "strasse": "Lückestraße",
+    "termine": [
+      { "datum": "2026-02-09", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-11", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-10", "wochentag": "Montag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-09", "wochentag": "Montag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Westerhüsen",
+    "strasse": "Weimarer Straße / Welsleber Straße",
+    "termine": [
+      { "datum": "2026-02-10", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-05-12", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-08-11", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" },
+      { "datum": "2026-11-10", "wochentag": "Dienstag", "von": "13:00", "bis": "13:45" }
+    ]
+  },
+  {
+    "stadtteil": "Westerhüsen",
+    "strasse": "Zackmünder Straße (an der Feuerwehr)",
+    "termine": [
+      { "datum": "2026-05-21", "wochentag": "Donnerstag", "von": "14:45", "bis": "15:15" },
+      { "datum": "2026-11-19", "wochentag": "Donnerstag", "von": "14:45", "bis": "15:15" }
+    ]
+  }
+]
