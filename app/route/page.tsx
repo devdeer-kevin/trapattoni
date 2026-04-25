@@ -67,6 +67,23 @@ function ActionBadge({ action }: { action: Action }) {
   );
 }
 
+const BIN_TYPE_STYLES: Record<string, { dot: string; text: string }> = {
+  Bioabfall: { dot: "bg-amber-700", text: "text-amber-800" },
+  Altpapier: { dot: "bg-blue-600", text: "text-blue-700" },
+  "Gelbe Tonne": { dot: "bg-yellow-400", text: "text-yellow-600" },
+  Restabfall: { dot: "bg-gray-700", text: "text-gray-700" },
+};
+
+function BinTypeBadge({ binType }: { binType: string }) {
+  const style = BIN_TYPE_STYLES[binType] ?? { dot: "bg-gray-400", text: "text-gray-600" };
+  return (
+    <span className={`inline-flex items-center gap-1.5 font-medium ${style.text}`}>
+      <span className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`} />
+      {binType}
+    </span>
+  );
+}
+
 function DaySection({
   date,
   events,
@@ -108,8 +125,8 @@ function DaySection({
               <td className="px-3 py-2.5 text-sm text-foreground print:py-1 print:text-xs">
                 {ev.street} {ev.houseNumber}
               </td>
-              <td className="px-3 py-2.5 text-sm text-foreground-secondary print:py-1 print:text-xs">
-                {ev.binType}
+              <td className="px-3 py-2.5 text-sm print:py-1 print:text-xs">
+                <BinTypeBadge binType={ev.binType} />
               </td>
               <td className="px-3 py-2.5 print:py-1">
                 <ActionBadge action={actionType} />
