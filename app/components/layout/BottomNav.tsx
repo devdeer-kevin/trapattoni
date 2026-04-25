@@ -49,7 +49,7 @@ export default function BottomNav() {
   const mainItems = navItems.slice(0, 3);
 
   return (
-    <>
+    <div className="print:hidden">
       {/* User menu popover */}
       {menuOpen && (
         <div
@@ -199,6 +199,6 @@ export default function BottomNav() {
           <span className="text-xs font-medium">Konto</span>
         </button>
       </nav>
-    </>
+    </div>
   );
 }

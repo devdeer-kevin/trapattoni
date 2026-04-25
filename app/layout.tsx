@@ -49,7 +49,7 @@ export default function RootLayout({
           style={{ paddingBottom: "calc(60px + env(safe-area-inset-bottom))" }}
         >
           <header
-            className="lg:hidden sticky top-0 z-30 px-4 py-3"
+            className="lg:hidden sticky top-0 z-30 px-4 py-3 print:hidden"
             style={{
               background: "var(--surface-glass)",
               backdropFilter: "blur(12px)",

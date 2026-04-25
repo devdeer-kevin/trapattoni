@@ -545,21 +545,6 @@ export default function RoutePage() {
       `}</style>
 
       <main className="min-h-screen bg-background print:bg-background-subtle">
-        {/* Print header – only visible when printing */}
-        <div className="hidden print:block px-4 pt-4 pb-2 border-b border-border mb-4">
-          <h1 className="text-lg font-bold text-foreground">
-            Wochenplan – Tonnen
-          </h1>
-          <p className="text-xs text-foreground-tertiary">
-            Gedruckt am{" "}
-            {new Date().toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
-          </p>
-        </div>
-
         <div className="max-w-3xl md:px-8 px-4 py-4 print:px-2 print:py-0">
           {/* Header bar */}
           <div className="no-print flex items-center justify-between pb-4 mb-6 border-b border-border-subtle">

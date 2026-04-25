@@ -20,7 +20,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="fixed left-0 top-0 h-full w-60 hidden lg:flex flex-col z-40"
+      className="fixed left-0 top-0 h-full w-60 hidden lg:flex flex-col z-40 print:hidden"
       style={{
         borderRight: "1px solid var(--border-subtle)",
         background: "var(--bg-subtle)",
