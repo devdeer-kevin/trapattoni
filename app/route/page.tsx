@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Printer } from "lucide-react";
+import { Printer, Eye, EyeOff, ChevronUp, ChevronDown, SlidersHorizontal } from "lucide-react";
 import type { RouteEvent, RouteResponse } from "@/app/api/v1/route/route";
+
+// ---------------------------------------------------------------------------
+// Preferences persistence
+// ---------------------------------------------------------------------------
+
+const ROUTE_PREFS_KEY = "tonnenraus-route-prefs";
+type RoutePrefs = { hiddenIds: number[]; order: number[] };
 
 // ---------------------------------------------------------------------------
 // Date helpers (client-side)
@@ -44,6 +51,56 @@ function nextWeekLabel(): string {
     day: "2-digit",
     month: "2-digit",
   });
+}
+
+// ---------------------------------------------------------------------------
+// Address filter helpers
+// ---------------------------------------------------------------------------
+
+type AddressEntry = { addressId: number; label: string };
+
+function extractAddresses(
+  currentWeek: { [date: string]: RouteEvent[] },
+  nextWeek: { [date: string]: RouteEvent[] },
+): AddressEntry[] {
+  const map = new Map<number, { addressId: number; label: string; position: number }>();
+  for (const events of [...Object.values(currentWeek), ...Object.values(nextWeek)]) {
+    for (const ev of events) {
+      if (!map.has(ev.addressId)) {
+        map.set(ev.addressId, {
+          addressId: ev.addressId,
+          label: `${ev.street} ${ev.houseNumber}`,
+          position: ev.position,
+        });
+      }
+    }
+  }
+  return Array.from(map.values())
+    .sort((a, b) => a.position - b.position)
+    .map(({ addressId, label }) => ({ addressId, label }));
+}
+
+function normaliseOrder(savedOrder: number[], allAddressIds: number[]): number[] {
+  const filtered = savedOrder.filter((id) => allAddressIds.includes(id));
+  const appended = allAddressIds.filter((id) => !filtered.includes(id));
+  return [...filtered, ...appended];
+}
+
+function applyFilterAndOrder(
+  weekEvents: { [date: string]: RouteEvent[] },
+  hiddenAddressIds: Set<number>,
+  addressOrder: number[],
+): { [date: string]: RouteEvent[] } {
+  const result: { [date: string]: RouteEvent[] } = {};
+  for (const [date, events] of Object.entries(weekEvents)) {
+    const filtered = events
+      .filter((ev) => !hiddenAddressIds.has(ev.addressId))
+      .sort(
+        (a, b) => addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId),
+      );
+    if (filtered.length > 0) result[date] = filtered;
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -186,20 +243,14 @@ function WeekSection({
         <div className="space-y-4 print:space-y-2">
           {allDates.map((date) => (
             <div key={date}>
-              {/* "Tonne raus" actions on this date */}
               <DaySection
                 date={date}
-                events={(outBuckets[date] ?? []).sort(
-                  (a, b) => a.position - b.position,
-                )}
+                events={outBuckets[date] ?? []}
                 actionType="out"
               />
-              {/* "Tonne rein" actions on this date */}
               <DaySection
                 date={date}
-                events={(inBuckets[date] ?? []).sort(
-                  (a, b) => a.position - b.position,
-                )}
+                events={inBuckets[date] ?? []}
                 actionType="in"
               />
             </div>
@@ -207,6 +258,86 @@ function WeekSection({
         </div>
       )}
     </section>
+  );
+}
+
+function AddressFilterPanel({
+  addresses,
+  hiddenAddressIds,
+  onToggle,
+  onMoveUp,
+  onMoveDown,
+  onShowAll,
+  onHideAll,
+}: {
+  addresses: AddressEntry[];
+  hiddenAddressIds: Set<number>;
+  onToggle: (id: number) => void;
+  onMoveUp: (id: number) => void;
+  onMoveDown: (id: number) => void;
+  onShowAll: () => void;
+  onHideAll: () => void;
+}) {
+  const allHidden = addresses.every((a) => hiddenAddressIds.has(a.addressId));
+  return (
+    <div className="no-print mb-6 rounded-xl border border-border-subtle bg-background-subtle">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
+        <span className="text-sm font-medium text-foreground-secondary">Adressen filtern &amp; sortieren</span>
+        <div className="flex items-center gap-3">
+          {!allHidden && (
+            <button
+              onClick={onHideAll}
+              className="text-xs text-foreground-tertiary hover:underline"
+            >
+              Alle ausblenden
+            </button>
+          )}
+          {hiddenAddressIds.size > 0 && (
+            <button
+              onClick={onShowAll}
+              className="text-xs text-accent-secondary hover:underline"
+            >
+              Alle einblenden
+            </button>
+          )}
+        </div>
+      </div>
+      <ul className="divide-y divide-border-subtle">
+        {addresses.map((addr, idx) => {
+          const hidden = hiddenAddressIds.has(addr.addressId);
+          return (
+            <li key={addr.addressId} className="flex items-center gap-2 px-4 py-2.5">
+              <span className={`flex-1 text-sm ${hidden ? "text-foreground-tertiary line-through" : "text-foreground"}`}>
+                {addr.label}
+              </span>
+              <button
+                onClick={() => onToggle(addr.addressId)}
+                className="rounded-lg p-1.5 text-foreground-tertiary hover:bg-background hover:text-foreground"
+                title={hidden ? "Einblenden" : "Ausblenden"}
+              >
+                {hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+              <button
+                onClick={() => onMoveUp(addr.addressId)}
+                disabled={idx === 0}
+                className="rounded-lg p-1.5 text-foreground-tertiary hover:bg-background hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Nach oben"
+              >
+                <ChevronUp className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => onMoveDown(addr.addressId)}
+                disabled={idx === addresses.length - 1}
+                className="rounded-lg p-1.5 text-foreground-tertiary hover:bg-background hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Nach unten"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -218,6 +349,9 @@ export default function RoutePage() {
   const [data, setData] = useState<RouteResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hiddenAddressIds, setHiddenAddressIds] = useState<Set<number>>(new Set());
+  const [addressOrder, setAddressOrder] = useState<number[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/v1/route")
@@ -229,12 +363,69 @@ export default function RoutePage() {
         if (!r.ok) throw new Error("Fehler beim Laden.");
         return r.json();
       })
-      .then((d) => {
-        if (d) setData(d);
+      .then((d: RouteResponse | null) => {
+        if (!d) return;
+        const addresses = extractAddresses(d.currentWeek, d.nextWeek);
+        const allIds = addresses.map((a) => a.addressId);
+        let prefs: RoutePrefs | null = null;
+        try {
+          prefs = JSON.parse(localStorage.getItem(ROUTE_PREFS_KEY) ?? "null");
+        } catch {
+          // ignore corrupted storage
+        }
+        const order = normaliseOrder(prefs?.order ?? [], allIds);
+        const hiddenIds = (prefs?.hiddenIds ?? []).filter((id) => allIds.includes(id));
+        setAddressOrder(order);
+        setHiddenAddressIds(new Set(hiddenIds));
+        setData(d);
       })
       .catch(() => setError("Tourenplan konnte nicht geladen werden."))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!data || addressOrder.length === 0) return;
+    localStorage.setItem(
+      ROUTE_PREFS_KEY,
+      JSON.stringify({ hiddenIds: Array.from(hiddenAddressIds), order: addressOrder }),
+    );
+  }, [hiddenAddressIds, addressOrder, data]);
+
+  function handleToggleAddress(id: number) {
+    setHiddenAddressIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function handleShowAll() {
+    setHiddenAddressIds(new Set());
+  }
+
+  function handleHideAll(allIds: number[]) {
+    setHiddenAddressIds(new Set(allIds));
+  }
+
+  function handleMoveUp(id: number) {
+    setAddressOrder((prev) => {
+      const idx = prev.indexOf(id);
+      if (idx <= 0) return prev;
+      const next = [...prev];
+      [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+      return next;
+    });
+  }
+
+  function handleMoveDown(id: number) {
+    setAddressOrder((prev) => {
+      const idx = prev.indexOf(id);
+      if (idx < 0 || idx >= prev.length - 1) return prev;
+      const next = [...prev];
+      [next[idx + 1], next[idx]] = [next[idx], next[idx + 1]];
+      return next;
+    });
+  }
 
   return (
     <>
@@ -264,19 +455,40 @@ export default function RoutePage() {
         </div>
 
         <div className="max-w-3xl md:px-8 px-4 py-4 print:px-2 print:py-0">
-          {/* Print button */}
+          {/* Header bar */}
           <div className="no-print flex items-center justify-between pb-4 mb-6 border-b border-border-subtle">
             <h1 className="text-xl font-semibold text-foreground">
               Wochenplan
             </h1>
-            <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
-            >
-              <Printer className="h-4 w-4" />
-              Drucken
-            </button>
+            <div className="flex items-center gap-2">
+              {data && (
+                <button
+                  onClick={() => setFilterOpen((o) => !o)}
+                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium shadow-sm ${
+                    filterOpen
+                      ? "border-accent bg-accent/10 text-accent-secondary"
+                      : "border-border bg-background-subtle text-foreground-secondary hover:bg-background"
+                  }`}
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Adressen
+                  {hiddenAddressIds.size > 0 && (
+                    <span className="rounded-full bg-accent px-1.5 py-0.5 text-xs font-semibold text-white leading-none">
+                      {hiddenAddressIds.size}
+                    </span>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle px-3 py-2 text-sm font-medium text-foreground-secondary shadow-sm hover:bg-background"
+              >
+                <Printer className="h-4 w-4" />
+                Drucken
+              </button>
+            </div>
           </div>
+
           {/* Loading skeletons */}
           {loading && (
             <div className="no-print space-y-4">
@@ -297,18 +509,35 @@ export default function RoutePage() {
           )}
 
           {/* Route data */}
-          {data && (
-            <>
-              <WeekSection
-                title={`Diese Woche (ab ${currentWeekLabel()})`}
-                weekEvents={data.currentWeek}
-              />
-              <WeekSection
-                title={`Nächste Woche (ab ${nextWeekLabel()})`}
-                weekEvents={data.nextWeek}
-              />
-            </>
-          )}
+          {data && (() => {
+            const addresses = extractAddresses(data.currentWeek, data.nextWeek);
+            const orderedAddresses = [...addresses].sort(
+              (a, b) => addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId),
+            );
+            return (
+              <>
+                {filterOpen && (
+                  <AddressFilterPanel
+                    addresses={orderedAddresses}
+                    hiddenAddressIds={hiddenAddressIds}
+                    onToggle={handleToggleAddress}
+                    onMoveUp={handleMoveUp}
+                    onMoveDown={handleMoveDown}
+                    onShowAll={handleShowAll}
+                    onHideAll={() => handleHideAll(orderedAddresses.map((a) => a.addressId))}
+                  />
+                )}
+                <WeekSection
+                  title={`Diese Woche (ab ${currentWeekLabel()})`}
+                  weekEvents={applyFilterAndOrder(data.currentWeek, hiddenAddressIds, addressOrder)}
+                />
+                <WeekSection
+                  title={`Nächste Woche (ab ${nextWeekLabel()})`}
+                  weekEvents={applyFilterAndOrder(data.nextWeek, hiddenAddressIds, addressOrder)}
+                />
+              </>
+            );
+          })()}
         </div>
       </main>
     </>
