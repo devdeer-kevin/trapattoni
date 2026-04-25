@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Printer, Eye, EyeOff, ChevronUp, ChevronDown, SlidersHorizontal } from "lucide-react";
+import {
+  Printer,
+  Eye,
+  EyeOff,
+  ChevronUp,
+  ChevronDown,
+  SlidersHorizontal,
+} from "lucide-react";
 import type { RouteEvent, RouteResponse } from "@/app/api/v1/route/route";
 
 // ---------------------------------------------------------------------------
@@ -63,8 +70,14 @@ function extractAddresses(
   currentWeek: { [date: string]: RouteEvent[] },
   nextWeek: { [date: string]: RouteEvent[] },
 ): AddressEntry[] {
-  const map = new Map<number, { addressId: number; label: string; position: number }>();
-  for (const events of [...Object.values(currentWeek), ...Object.values(nextWeek)]) {
+  const map = new Map<
+    number,
+    { addressId: number; label: string; position: number }
+  >();
+  for (const events of [
+    ...Object.values(currentWeek),
+    ...Object.values(nextWeek),
+  ]) {
     for (const ev of events) {
       if (!map.has(ev.addressId)) {
         map.set(ev.addressId, {
@@ -80,7 +93,10 @@ function extractAddresses(
     .map(({ addressId, label }) => ({ addressId, label }));
 }
 
-function normaliseOrder(savedOrder: number[], allAddressIds: number[]): number[] {
+function normaliseOrder(
+  savedOrder: number[],
+  allAddressIds: number[],
+): number[] {
   const filtered = savedOrder.filter((id) => allAddressIds.includes(id));
   const appended = allAddressIds.filter((id) => !filtered.includes(id));
   return [...filtered, ...appended];
@@ -96,7 +112,8 @@ function applyFilterAndOrder(
     const filtered = events
       .filter((ev) => !hiddenAddressIds.has(ev.addressId))
       .sort(
-        (a, b) => addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId),
+        (a, b) =>
+          addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId),
       );
     if (filtered.length > 0) result[date] = filtered;
   }
@@ -132,40 +149,49 @@ const BIN_TYPE_STYLES: Record<string, { dot: string; text: string }> = {
 };
 
 function BinTypeBadge({ binType }: { binType: string }) {
-  const style = BIN_TYPE_STYLES[binType] ?? { dot: "bg-gray-400", text: "text-gray-600" };
+  const style = BIN_TYPE_STYLES[binType] ?? {
+    dot: "bg-gray-400",
+    text: "text-gray-600",
+  };
   return (
-    <span className={`inline-flex items-center gap-1.5 font-medium ${style.text}`}>
-      <span className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`} />
+    <span
+      className={`inline-flex items-center gap-1.5 font-medium ${style.text}`}
+    >
+      <span
+        className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`}
+      />
       {binType}
     </span>
   );
 }
 
+type DayEntry = { event: RouteEvent; action: Action };
+
 function DaySection({
   date,
-  events,
-  actionType,
+  entries,
 }: {
   date: string; // YYYY-MM-DD
-  events: RouteEvent[];
-  actionType: Action;
+  entries: DayEntry[];
 }) {
-  if (events.length === 0) return null;
+  if (entries.length === 0) return null;
 
   return (
-    <div className="mb-1">
+    <div className="mt-2">
       {/* Day header */}
       <div className="mb-1 flex items-baseline gap-2 px-1 print:mb-0.5">
         <span className="text-sm font-semibold text-foreground-secondary print:text-xs">
           {formatDate(date)}
         </span>
-        <span className="text-xs text-foreground-tertiary print:hidden">
-          {actionType === "out" ? "→ Tonne rausstellen" : "→ Tonne reinholen"}
-        </span>
       </div>
 
       {/* Table */}
-      <table className="w-full border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+      <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+        <colgroup>
+          <col />
+          <col className="w-44" />
+          <col className="w-28" />
+        </colgroup>
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
             <th className="px-3 py-2">Adresse</th>
@@ -174,19 +200,19 @@ function DaySection({
           </tr>
         </thead>
         <tbody>
-          {events.map((ev) => (
+          {entries.map(({ event: ev, action }) => (
             <tr
-              key={`${ev.addressId}-${ev.binType}-${actionType}`}
+              key={`${ev.addressId}-${ev.binType}-${action}`}
               className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
             >
-              <td className="px-3 py-2.5 text-sm text-foreground print:py-1 print:text-xs">
+              <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
                 {ev.street} {ev.houseNumber}
               </td>
               <td className="px-3 py-2.5 text-sm print:py-1 print:text-xs">
                 <BinTypeBadge binType={ev.binType} />
               </td>
               <td className="px-3 py-2.5 print:py-1">
-                <ActionBadge action={actionType} />
+                <ActionBadge action={action} />
               </td>
             </tr>
           ))}
@@ -196,19 +222,15 @@ function DaySection({
   );
 }
 
-/**
- * Renders all days in a week. For each day, the pickup events contribute two
- * rows in the schedule: one on binOut day ("Tonne raus") and one on binIn day
- * ("Tonne rein"). We expand the event list into action-keyed buckets.
- */
 function WeekSection({
   title,
   weekEvents,
+  addressOrder,
 }: {
   title: string;
   weekEvents: { [date: string]: RouteEvent[] };
+  addressOrder: number[];
 }) {
-  // Collect all unique action dates that appear across the week's events
   const outBuckets: { [date: string]: RouteEvent[] } = {};
   const inBuckets: { [date: string]: RouteEvent[] } = {};
 
@@ -222,7 +244,6 @@ function WeekSection({
     }
   }
 
-  // Merge and sort all action dates
   const allDates = Array.from(
     new Set([...Object.keys(outBuckets), ...Object.keys(inBuckets)]),
   ).sort();
@@ -241,20 +262,26 @@ function WeekSection({
         </p>
       ) : (
         <div className="space-y-4 print:space-y-2">
-          {allDates.map((date) => (
-            <div key={date}>
-              <DaySection
-                date={date}
-                events={outBuckets[date] ?? []}
-                actionType="out"
-              />
-              <DaySection
-                date={date}
-                events={inBuckets[date] ?? []}
-                actionType="in"
-              />
-            </div>
-          ))}
+          {allDates.map((date) => {
+            const entries: DayEntry[] = [
+              ...(outBuckets[date] ?? []).map((ev) => ({
+                event: ev,
+                action: "out" as Action,
+              })),
+              ...(inBuckets[date] ?? []).map((ev) => ({
+                event: ev,
+                action: "in" as Action,
+              })),
+            ];
+            entries.sort((a, b) => {
+              const diff =
+                addressOrder.indexOf(a.event.addressId) -
+                addressOrder.indexOf(b.event.addressId);
+              if (diff !== 0) return diff;
+              return a.action === "out" ? -1 : 1;
+            });
+            return <DaySection key={date} date={date} entries={entries} />;
+          })}
         </div>
       )}
     </section>
@@ -282,7 +309,9 @@ function AddressFilterPanel({
   return (
     <div className="no-print mb-6 rounded-xl border border-border-subtle bg-background-subtle">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
-        <span className="text-sm font-medium text-foreground-secondary">Adressen filtern &amp; sortieren</span>
+        <span className="text-sm font-medium text-foreground-secondary">
+          Adressen filtern &amp; sortieren
+        </span>
         <div className="flex items-center gap-3">
           {!allHidden && (
             <button
@@ -306,8 +335,13 @@ function AddressFilterPanel({
         {addresses.map((addr, idx) => {
           const hidden = hiddenAddressIds.has(addr.addressId);
           return (
-            <li key={addr.addressId} className="flex items-center gap-2 px-4 py-2.5">
-              <span className={`flex-1 text-sm ${hidden ? "text-foreground-tertiary line-through" : "text-foreground"}`}>
+            <li
+              key={addr.addressId}
+              className="flex items-center gap-2 px-4 py-2.5"
+            >
+              <span
+                className={`flex-1 text-sm ${hidden ? "text-foreground-tertiary line-through" : "text-foreground"}`}
+              >
                 {addr.label}
               </span>
               <button
@@ -315,7 +349,11 @@ function AddressFilterPanel({
                 className="rounded-lg p-1.5 text-foreground-tertiary hover:bg-background hover:text-foreground"
                 title={hidden ? "Einblenden" : "Ausblenden"}
               >
-                {hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {hidden ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
               <button
                 onClick={() => onMoveUp(addr.addressId)}
@@ -349,7 +387,9 @@ export default function RoutePage() {
   const [data, setData] = useState<RouteResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hiddenAddressIds, setHiddenAddressIds] = useState<Set<number>>(new Set());
+  const [hiddenAddressIds, setHiddenAddressIds] = useState<Set<number>>(
+    new Set(),
+  );
   const [addressOrder, setAddressOrder] = useState<number[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -374,7 +414,9 @@ export default function RoutePage() {
           // ignore corrupted storage
         }
         const order = normaliseOrder(prefs?.order ?? [], allIds);
-        const hiddenIds = (prefs?.hiddenIds ?? []).filter((id) => allIds.includes(id));
+        const hiddenIds = (prefs?.hiddenIds ?? []).filter((id) =>
+          allIds.includes(id),
+        );
         setAddressOrder(order);
         setHiddenAddressIds(new Set(hiddenIds));
         setData(d);
@@ -387,7 +429,10 @@ export default function RoutePage() {
     if (!data || addressOrder.length === 0) return;
     localStorage.setItem(
       ROUTE_PREFS_KEY,
-      JSON.stringify({ hiddenIds: Array.from(hiddenAddressIds), order: addressOrder }),
+      JSON.stringify({
+        hiddenIds: Array.from(hiddenAddressIds),
+        order: addressOrder,
+      }),
     );
   }, [hiddenAddressIds, addressOrder, data]);
 
@@ -509,35 +554,53 @@ export default function RoutePage() {
           )}
 
           {/* Route data */}
-          {data && (() => {
-            const addresses = extractAddresses(data.currentWeek, data.nextWeek);
-            const orderedAddresses = [...addresses].sort(
-              (a, b) => addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId),
-            );
-            return (
-              <>
-                {filterOpen && (
-                  <AddressFilterPanel
-                    addresses={orderedAddresses}
-                    hiddenAddressIds={hiddenAddressIds}
-                    onToggle={handleToggleAddress}
-                    onMoveUp={handleMoveUp}
-                    onMoveDown={handleMoveDown}
-                    onShowAll={handleShowAll}
-                    onHideAll={() => handleHideAll(orderedAddresses.map((a) => a.addressId))}
+          {data &&
+            (() => {
+              const addresses = extractAddresses(
+                data.currentWeek,
+                data.nextWeek,
+              );
+              const orderedAddresses = [...addresses].sort(
+                (a, b) =>
+                  addressOrder.indexOf(a.addressId) -
+                  addressOrder.indexOf(b.addressId),
+              );
+              return (
+                <>
+                  {filterOpen && (
+                    <AddressFilterPanel
+                      addresses={orderedAddresses}
+                      hiddenAddressIds={hiddenAddressIds}
+                      onToggle={handleToggleAddress}
+                      onMoveUp={handleMoveUp}
+                      onMoveDown={handleMoveDown}
+                      onShowAll={handleShowAll}
+                      onHideAll={() =>
+                        handleHideAll(orderedAddresses.map((a) => a.addressId))
+                      }
+                    />
+                  )}
+                  <WeekSection
+                    title={`Diese Woche (ab ${currentWeekLabel()})`}
+                    weekEvents={applyFilterAndOrder(
+                      data.currentWeek,
+                      hiddenAddressIds,
+                      addressOrder,
+                    )}
+                    addressOrder={addressOrder}
                   />
-                )}
-                <WeekSection
-                  title={`Diese Woche (ab ${currentWeekLabel()})`}
-                  weekEvents={applyFilterAndOrder(data.currentWeek, hiddenAddressIds, addressOrder)}
-                />
-                <WeekSection
-                  title={`Nächste Woche (ab ${nextWeekLabel()})`}
-                  weekEvents={applyFilterAndOrder(data.nextWeek, hiddenAddressIds, addressOrder)}
-                />
-              </>
-            );
-          })()}
+                  <WeekSection
+                    title={`Nächste Woche (ab ${nextWeekLabel()})`}
+                    weekEvents={applyFilterAndOrder(
+                      data.nextWeek,
+                      hiddenAddressIds,
+                      addressOrder,
+                    )}
+                    addressOrder={addressOrder}
+                  />
+                </>
+              );
+            })()}
         </div>
       </main>
     </>
