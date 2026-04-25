@@ -44,29 +44,29 @@ type SavedAddress = {
 const WASTE_COLORS: Record<string, { bg: string; text: string; dot: string }> =
   {
     Restabfall: {
-      bg: "bg-[#707D7D]/20",
-      text: "text-foreground",
-      dot: "bg-[#707D7D]",
+      bg: "bg-gray-100",
+      text: "text-gray-700",
+      dot: "bg-gray-700",
     },
     Bioabfall: {
-      bg: "bg-[#17876D]/25",
-      text: "text-foreground",
-      dot: "bg-[#17876D]",
+      bg: "bg-amber-50",
+      text: "text-amber-800",
+      dot: "bg-amber-700",
     },
     Altpapier: {
-      bg: "bg-[#AAC8C4]/30",
-      text: "text-foreground",
-      dot: "bg-[#AAC8C4]",
+      bg: "bg-blue-50",
+      text: "text-blue-700",
+      dot: "bg-blue-600",
     },
     "Gelbe Tonne": {
-      bg: "bg-[#F5A623]/25",
-      text: "text-foreground",
-      dot: "bg-[#F5A623]",
+      bg: "bg-yellow-50",
+      text: "text-yellow-600",
+      dot: "bg-yellow-400",
     },
     Grünschnitt: {
-      bg: "bg-[#2CC295]/25",
-      text: "text-foreground",
-      dot: "bg-[#2CC295]",
+      bg: "bg-green-50",
+      text: "text-green-700",
+      dot: "bg-green-600",
     },
   };
 
