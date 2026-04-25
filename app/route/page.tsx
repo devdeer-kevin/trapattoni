@@ -170,20 +170,32 @@ type DayEntry = { event: RouteEvent; action: Action };
 function DaySection({
   date,
   entries,
+  showDate = true,
+  subLabel,
 }: {
   date: string; // YYYY-MM-DD
   entries: DayEntry[];
+  showDate?: boolean;
+  subLabel?: string;
 }) {
   if (entries.length === 0) return null;
 
   return (
     <div className="mt-2">
-      {/* Day header */}
-      <div className="mb-1 flex items-baseline gap-2 px-1 print:mb-0.5">
-        <span className="text-sm font-semibold text-foreground-secondary print:text-xs">
-          {formatDate(date)}
-        </span>
-      </div>
+      {(showDate || subLabel) && (
+        <div className="mb-1 flex items-baseline gap-2 px-1 print:mb-0.5">
+          {showDate && (
+            <span className="text-sm font-semibold text-foreground-secondary print:text-xs">
+              {formatDate(date)}
+            </span>
+          )}
+          {subLabel && (
+            <span className="text-xs text-foreground-tertiary">
+              {subLabel}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Table */}
       <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
@@ -263,15 +275,64 @@ function WeekSection({
       ) : (
         <div className="space-y-4 print:space-y-2">
           {allDates.map((date) => {
+            const sortByOrder = (a: RouteEvent, b: RouteEvent) =>
+              addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId);
+
+            const outAll = (outBuckets[date] ?? []).slice().sort(sortByOrder);
+            const inAll = (inBuckets[date] ?? []).slice().sort(sortByOrder);
+
+            // Events where binOut=date AND pickupDate=date are put out the same
+            // morning before the collection (Monday case). All other out-events
+            // on this date are put out in the afternoon for the next pickup.
+            const morningOut = outAll
+              .filter((ev) => ev.pickupDate === date)
+              .map((ev) => ({ event: ev, action: "out" as Action }));
+            const afternoonOut = outAll
+              .filter((ev) => ev.pickupDate !== date)
+              .map((ev) => ({ event: ev, action: "out" as Action }));
+            const afternoonIn = inAll.map((ev) => ({
+              event: ev,
+              action: "in" as Action,
+            }));
+
+            // Split only when same-day raus and afternoon actions coexist (Monday)
+            const needsSplit =
+              morningOut.length > 0 &&
+              (afternoonIn.length > 0 || afternoonOut.length > 0);
+
+            if (needsSplit) {
+              return (
+                <div key={date} className="space-y-2 print:space-y-1">
+                  <DaySection
+                    date={date}
+                    entries={morningOut}
+                    subLabel="→ Vormittags"
+                  />
+                  {afternoonIn.length > 0 && (
+                    <DaySection
+                      date={date}
+                      entries={afternoonIn}
+                      showDate={false}
+                      subLabel="Nachmittags – rein"
+                    />
+                  )}
+                  {afternoonOut.length > 0 && (
+                    <DaySection
+                      date={date}
+                      entries={afternoonOut}
+                      showDate={false}
+                      subLabel="Nachmittags – raus"
+                    />
+                  )}
+                </div>
+              );
+            }
+
+            // Normal case: single table, sorted by address then out-before-in
             const entries: DayEntry[] = [
-              ...(outBuckets[date] ?? []).map((ev) => ({
-                event: ev,
-                action: "out" as Action,
-              })),
-              ...(inBuckets[date] ?? []).map((ev) => ({
-                event: ev,
-                action: "in" as Action,
-              })),
+              ...morningOut,
+              ...afternoonOut,
+              ...afternoonIn,
             ];
             entries.sort((a, b) => {
               const diff =
