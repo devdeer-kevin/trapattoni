@@ -190,9 +190,7 @@ function DaySection({
             </span>
           )}
           {subLabel && (
-            <span className="text-xs text-foreground-tertiary">
-              {subLabel}
-            </span>
+            <span className="text-xs text-foreground-tertiary">{subLabel}</span>
           )}
         </div>
       )}
@@ -276,7 +274,8 @@ function WeekSection({
         <div className="space-y-4 print:space-y-2">
           {allDates.map((date) => {
             const sortByOrder = (a: RouteEvent, b: RouteEvent) =>
-              addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId);
+              addressOrder.indexOf(a.addressId) -
+              addressOrder.indexOf(b.addressId);
 
             const outAll = (outBuckets[date] ?? []).slice().sort(sortByOrder);
             const inAll = (inBuckets[date] ?? []).slice().sort(sortByOrder);
@@ -368,7 +367,7 @@ function AddressFilterPanel({
 }) {
   const allHidden = addresses.every((a) => hiddenAddressIds.has(a.addressId));
   return (
-    <div className="no-print mb-6 rounded-xl border border-border-subtle bg-background-subtle">
+    <div className="no-print max-h-60 overflow-y-scroll  mb-6 rounded-xl border border-border-subtle bg-background-subtle">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
         <span className="text-sm font-medium text-foreground-secondary">
           Adressen filtern &amp; sortieren
