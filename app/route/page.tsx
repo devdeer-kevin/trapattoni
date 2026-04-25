@@ -328,18 +328,18 @@ function WeekSection({
               );
             }
 
-            // Normal case: single table, sorted by address then out-before-in
+            // Normal case: single table, all raus grouped first then all rein
             const entries: DayEntry[] = [
               ...morningOut,
               ...afternoonOut,
               ...afternoonIn,
             ];
             entries.sort((a, b) => {
-              const diff =
+              if (a.action !== b.action) return a.action === "out" ? -1 : 1;
+              return (
                 addressOrder.indexOf(a.event.addressId) -
-                addressOrder.indexOf(b.event.addressId);
-              if (diff !== 0) return diff;
-              return a.action === "out" ? -1 : 1;
+                addressOrder.indexOf(b.event.addressId)
+              );
             });
             return <DaySection key={date} date={date} entries={entries} />;
           })}
