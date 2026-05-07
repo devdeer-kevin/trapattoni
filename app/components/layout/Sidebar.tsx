@@ -34,6 +34,7 @@ export default function Sidebar() {
         <Image
           src="/logo-tonne.svg"
           alt="TonneRaus Logo"
+          loading="eager"
           width={28}
           height={34}
           className="w-5"
