@@ -25,6 +25,7 @@ export type WasteCollection = {
 
 export type PickupSchedule = {
   address: string;
+  stadtteilId: string | null;
   collections: WasteCollection[];
 };
 
@@ -172,8 +173,11 @@ export async function getPickupDates(
     hausnummer: houseNumber,
   });
 
-  // The response is split by ###$$$### — we only need the HTML part
+  // The response is split by ###$$$### — format: "###$$$###abfallart#stadtteil_id#behaelter$"
   const html = raw.split("###$$$###")[0];
+  const separator = raw.split("###$$$###")[1] ?? "";
+  const gelbeTonneEntry = separator.split("$").find(s => s.startsWith("4#"));
+  const stadtteilId = gelbeTonneEntry ? gelbeTonneEntry.split("#")[1] : null;
   const $ = cheerio.load(html);
 
   // Extract the address from the <h4> heading
@@ -218,5 +222,36 @@ export async function getPickupDates(
     }
   });
 
-  return { address, collections };
+  return { address, stadtteilId, collections };
+}
+
+export async function getGelbeTonneDates(
+  stadtteilId: string,
+  behaelterValue: string,
+): Promise<WasteCollection> {
+  const raw = await sabPost({
+    r: "getHausnummerInfo",
+    stadtteil_id: stadtteilId,
+    dsd_behaelter_value: behaelterValue,
+    abfallart: "4",
+  });
+
+  const html = raw.split("###$$$###")[0];
+  const $ = cheerio.load(html);
+
+  const dates: PickupEntry[] = [];
+
+  $("#outA4 .termintable div[class*='col-']").each((_, cell) => {
+    const el = $(cell);
+    const text = el.text();
+    const hasVtag = el.hasClass("vtag");
+    const entry = parseDateCell(text, hasVtag);
+    if (entry) dates.push(entry);
+  });
+
+  return {
+    type: "Gelbe Tonne",
+    frequency: "",
+    dates,
+  };
 }
