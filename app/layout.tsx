@@ -60,6 +60,7 @@ export default function RootLayout({
             <div className="flex items-center justify-center gap-2.5">
               <Image
                 src="/logo-tonne.svg"
+                loading="eager"
                 alt="TonneRaus Logo"
                 width={22}
                 height={27}
