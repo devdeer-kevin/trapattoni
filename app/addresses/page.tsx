@@ -21,7 +21,7 @@ type HouseNumberEntry = {
   sabStandplatzId: string;
 };
 
-type GelbeTonenBehaelter = "b120_b240" | "b1100";
+type GelbeTonenBehaelter = "b120_b240" | "b1100" | "both";
 
 // ---------------------------------------------------------------------------
 // Street autocomplete (same pattern as app/page.tsx)
@@ -146,17 +146,16 @@ function ConfirmDeleteDialog({
 const BEHAELTER_LABEL: Record<string, string> = {
   b120_b240: "120/240 L",
   b1100: "1100 L",
+  both: "Alle Größen",
 };
 
 function AddressCard({
   address,
-  accountType,
   onSetDefault,
   onDelete,
   onChangeContainer,
 }: {
   address: SavedAddress;
-  accountType: string | null;
   onSetDefault: (id: string) => void;
   onDelete: (address: SavedAddress) => void;
   onChangeContainer: (id: string, behaelter: GelbeTonenBehaelter) => void;
@@ -203,54 +202,52 @@ function AddressCard({
               </button>
             )}
 
-            {/* Container size – only for private users */}
-            {accountType === "private" && (
-              <div className="mt-1.5">
-                {!editingContainer ? (
+            {/* Container size */}
+            <div className="mt-1.5">
+              {!editingContainer ? (
+                <button
+                  onClick={() => setEditingContainer(true)}
+                  className="inline-flex items-center gap-1 text-xs text-foreground-tertiary hover:text-accent-secondary"
+                >
+                  <Pencil className="h-3 w-3" />
+                  Gelbe Tonne:{" "}
+                  {BEHAELTER_LABEL[address.gelbe_tonne_behaelter] ??
+                    address.gelbe_tonne_behaelter}
+                </button>
+              ) : (
+                <div className="mt-1 flex items-center gap-3">
+                  {(["b120_b240", "b1100", "both"] as GelbeTonenBehaelter[]).map(
+                    (val) => (
+                      <label
+                        key={val}
+                        className="flex cursor-pointer items-center gap-1.5"
+                      >
+                        <input
+                          type="radio"
+                          name={`behaelter-${address.id}`}
+                          value={val}
+                          checked={address.gelbe_tonne_behaelter === val}
+                          onChange={() => {
+                            onChangeContainer(address.id, val);
+                            setEditingContainer(false);
+                          }}
+                          className="accent-accent"
+                        />
+                        <span className="text-xs text-foreground-secondary">
+                          {BEHAELTER_LABEL[val]}
+                        </span>
+                      </label>
+                    ),
+                  )}
                   <button
-                    onClick={() => setEditingContainer(true)}
-                    className="inline-flex items-center gap-1 text-xs text-foreground-tertiary hover:text-accent-secondary"
+                    onClick={() => setEditingContainer(false)}
+                    className="text-xs text-foreground-tertiary hover:text-foreground-secondary"
                   >
-                    <Pencil className="h-3 w-3" />
-                    Gelbe Tonne:{" "}
-                    {BEHAELTER_LABEL[address.gelbe_tonne_behaelter] ??
-                      address.gelbe_tonne_behaelter}
+                    Abbrechen
                   </button>
-                ) : (
-                  <div className="mt-1 flex items-center gap-3">
-                    {(["b120_b240", "b1100"] as GelbeTonenBehaelter[]).map(
-                      (val) => (
-                        <label
-                          key={val}
-                          className="flex cursor-pointer items-center gap-1.5"
-                        >
-                          <input
-                            type="radio"
-                            name={`behaelter-${address.id}`}
-                            value={val}
-                            checked={address.gelbe_tonne_behaelter === val}
-                            onChange={() => {
-                              onChangeContainer(address.id, val);
-                              setEditingContainer(false);
-                            }}
-                            className="accent-accent"
-                          />
-                          <span className="text-xs text-foreground-secondary">
-                            {BEHAELTER_LABEL[val]}
-                          </span>
-                        </label>
-                      ),
-                    )}
-                    <button
-                      onClick={() => setEditingContainer(false)}
-                      className="text-xs text-foreground-tertiary hover:text-foreground-secondary"
-                    >
-                      Abbrechen
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -272,11 +269,9 @@ function AddressCard({
 // ---------------------------------------------------------------------------
 
 function AddAddressForm({
-  accountType,
   onSave,
   onCancel,
 }: {
-  accountType: string | null;
   onSave: (
     street: string,
     houseNumber: string,
@@ -397,8 +392,8 @@ function AddAddressForm({
           </div>
         )}
 
-        {/* Container size picker – only for private users, after house number is selected */}
-        {selected && accountType === "private" && (
+        {/* Container size picker – after house number is selected */}
+        {selected && (
           <div>
             <p className="mb-2 text-xs font-medium text-foreground-tertiary">
               Behältergröße Gelbe Tonne
@@ -457,18 +452,12 @@ export default function AddressesPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<SavedAddress | null>(null);
-  const [accountType, setAccountType] = useState<string | null>(null);
 
-  // Load addresses and account type on mount
+  // Load addresses on mount
   useEffect(() => {
-    Promise.all([
-      fetch("/api/v1/addresses").then((r) => r.json()),
-      fetch("/api/v1/user/me").then((r) => r.json()),
-    ])
-      .then(([addrData, userData]) => {
-        setAddresses(addrData.addresses ?? []);
-        setAccountType(userData.account_type ?? "private");
-      })
+    fetch("/api/v1/addresses")
+      .then((r) => r.json())
+      .then((data) => setAddresses(data.addresses ?? []))
       .catch(() => setPageError("Fehler beim Laden der Adressen."))
       .finally(() => setPageLoading(false));
   }, []);
@@ -570,7 +559,6 @@ export default function AddressesPage() {
       {/* Add form – always at the top */}
       {showAddForm && (
         <AddAddressForm
-          accountType={accountType}
           onSave={handleSave}
           onCancel={() => setShowAddForm(false)}
         />
@@ -628,7 +616,6 @@ export default function AddressesPage() {
             <AddressCard
               key={addr.id}
               address={addr}
-              accountType={accountType}
               onSetDefault={handleSetDefault}
               onDelete={setConfirmTarget}
               onChangeContainer={handleChangeContainer}

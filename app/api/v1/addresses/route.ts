@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   await ensureUser(kindeUser.id, kindeUser.email ?? "");
 
   const [user] = await db`
-    SELECT id, account_type FROM users WHERE kinde_id = ${kindeUser.id}
+    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
   `;
 
   // Enforce 50-address limit
@@ -83,13 +83,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const accountType = ((user.account_type as string) ?? "private") as
-    | "private"
-    | "business";
-  const gelbeTonenBehaelter =
-    accountType === "private"
-      ? ((gelbe_tonne_behaelter as string) ?? "b120_b240")
-      : "b120_b240";
+  const gelbeTonenBehaelter = (gelbe_tonne_behaelter as string) ?? "b120_b240";
 
   // Find or create the canonical address record.
   // The unique key is (sab_street_id, house_number); sab_standplatz_id is NOT
@@ -139,7 +133,7 @@ export async function POST(request: NextRequest) {
 
   // Fire-and-forget: cache pickup events from the SAB API.
   // Errors are logged inside syncPickupEvents and never surface here.
-  syncPickupEvents(address.id, street, house_number, accountType).catch((err) =>
+  syncPickupEvents(address.id, street, house_number).catch((err) =>
     console.error("[addresses POST] syncPickupEvents unexpected error:", err),
   );
 

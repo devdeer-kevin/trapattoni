@@ -2,11 +2,9 @@ import { NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/db/ensure-user";
-import { syncPickupEvents } from "@/lib/sab/sync-pickup-events";
-
 // PATCH /api/v1/addresses/[id]
 // – set as default (no body)
-// – update container size: body { gelbe_tonne_behaelter: "b120_b240" | "b1100" }
+// – update container size: body { gelbe_tonne_behaelter: "b120_b240" | "b1100" | "both" }
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -24,7 +22,7 @@ export async function PATCH(
   await ensureUser(kindeUser.id, kindeUser.email ?? "");
 
   const [user] = await db`
-    SELECT id, account_type FROM users WHERE kinde_id = ${kindeUser.id}
+    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
   `;
 
   const { id } = await params;
@@ -52,30 +50,13 @@ export async function PATCH(
   // Container size change
   if (body.gelbe_tonne_behaelter) {
     const newBehaelter = body.gelbe_tonne_behaelter as string;
-    if (!["b120_b240", "b1100"].includes(newBehaelter)) {
+    if (!["b120_b240", "b1100", "both"].includes(newBehaelter)) {
       return NextResponse.json({ error: "Ungültige Behältergröße." }, { status: 400 });
     }
 
     await db`
       UPDATE addresses SET gelbe_tonne_behaelter = ${newBehaelter} WHERE id = ${id}
     `;
-
-    await db`
-      DELETE FROM pickup_events WHERE address_id = ${id} AND bin_type = 'Gelbe Tonne'
-    `;
-
-    const accountType = ((user.account_type as string) ?? "private") as
-      | "private"
-      | "business";
-
-    syncPickupEvents(
-      Number(id),
-      existing.street as string,
-      existing.house_number as string,
-      accountType,
-    ).catch((err) =>
-      console.error("[addresses PATCH] syncPickupEvents unexpected error:", err),
-    );
 
     return NextResponse.json({ success: true, gelbe_tonne_behaelter: newBehaelter });
   }

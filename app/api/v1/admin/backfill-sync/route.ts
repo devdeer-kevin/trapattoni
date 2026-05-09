@@ -13,11 +13,9 @@ export async function POST() {
   }
 
   const addresses = await db`
-    SELECT a.id, a.street, a.house_number, a.stadtteil_id, a.gelbe_tonne_behaelter,
-           u.account_type
+    SELECT a.id, a.street, a.house_number
     FROM addresses a
     JOIN user_addresses ua ON ua.address_id = a.id
-    JOIN users u ON u.id = ua.user_id
     ORDER BY a.id ASC
   `;
 
@@ -35,7 +33,6 @@ export async function POST() {
         addressId,
         addr.street as string,
         addr.house_number as string,
-        addr.account_type as "private" | "business",
       );
 
       const [updated] = await db`

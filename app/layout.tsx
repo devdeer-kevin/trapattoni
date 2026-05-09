@@ -13,8 +13,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "TonneRaus - Abfuhrkalender Magdeburg",
-  description: "Abfuhrkalender für Magdeburg",
+  title: "TonneRaus - Abfuhrkalender App für Magdeburg",
+  description: "Abfuhrkalender App für Magdeburg",
   robots: {
     index: false,
     follow: false,

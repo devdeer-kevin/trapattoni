@@ -106,15 +106,21 @@ export async function GET() {
 
   const events = await db`
     SELECT
-      address_id,
-      pickup_date::text AS pickup_date,
-      bin_type,
-      behaelter
-    FROM pickup_events
-    WHERE address_id = ANY(${addressIds})
-      AND pickup_date >= ${toISODate(rangeStart)}
-      AND pickup_date <= ${toISODate(rangeEnd)}
-    ORDER BY pickup_date ASC
+      pe.address_id,
+      pe.pickup_date::text AS pickup_date,
+      pe.bin_type,
+      pe.behaelter
+    FROM pickup_events pe
+    JOIN addresses a ON a.id = pe.address_id
+    WHERE pe.address_id = ANY(${addressIds})
+      AND pe.pickup_date >= ${toISODate(rangeStart)}
+      AND pe.pickup_date <= ${toISODate(rangeEnd)}
+      AND (
+        pe.bin_type != 'Gelbe Tonne'
+        OR pe.behaelter = a.gelbe_tonne_behaelter
+        OR a.gelbe_tonne_behaelter = 'both'
+      )
+    ORDER BY pe.pickup_date ASC
   `;
 
   // Build a lookup map: addressId → { position, street, houseNumber }

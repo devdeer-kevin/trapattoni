@@ -12,7 +12,6 @@ export async function syncPickupEvents(
   addressId: number,
   street: string,
   houseNumber: string,
-  accountType: "private" | "business",
 ): Promise<void> {
   let schedule;
 
@@ -58,7 +57,7 @@ export async function syncPickupEvents(
     }
   }
 
-  // Handle Gelbe Tonne separately based on stadtteilId and accountType
+  // Handle Gelbe Tonne separately based on stadtteilId
   if (!stadtteilId) {
     console.error(
       "[syncPickupEvents] No stadtteilId for address",
@@ -75,7 +74,8 @@ export async function syncPickupEvents(
         `;
       }
     }
-  } else if (accountType === "business") {
+  } else {
+    // Always fetch and store both sizes so the UI can filter by the address setting
     for (const size of ["b120_b240", "b1100"] as const) {
       let gelbeCollection;
       try {
@@ -94,27 +94,6 @@ export async function syncPickupEvents(
           ON CONFLICT (address_id, pickup_date, bin_type, behaelter) DO NOTHING
         `;
       }
-    }
-  } else {
-    // Private: read the stored container size from DB
-    const [addrRow] = await db`
-      SELECT gelbe_tonne_behaelter FROM addresses WHERE id = ${addressId}
-    `;
-    const behaelter = (addrRow?.gelbe_tonne_behaelter as string) ?? "b120_b240";
-
-    let gelbeCollection;
-    try {
-      gelbeCollection = await getGelbeTonneDates(stadtteilId, behaelter);
-    } catch (err) {
-      console.error("[syncPickupEvents] getGelbeTonneDates failed for private", err);
-      return;
-    }
-    for (const entry of gelbeCollection.dates) {
-      await db`
-        INSERT INTO pickup_events (address_id, pickup_date, bin_type, is_holiday_shift, behaelter)
-        VALUES (${addressId}, ${entry.date}, 'Gelbe Tonne', ${entry.isHolidayShift}, ${behaelter})
-        ON CONFLICT (address_id, pickup_date, bin_type, behaelter) DO NOTHING
-      `;
     }
   }
 
