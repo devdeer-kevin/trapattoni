@@ -306,8 +306,8 @@ function DaySection({
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
             <th className="px-3 py-2">Adresse</th>
+            <th className="px-3 py-2">Abfall</th>
             <th className="px-3 py-2">Tonne</th>
-            <th className="px-3 py-2">Aktion</th>
           </tr>
         </thead>
         <tbody>
@@ -511,10 +511,10 @@ function AddressDaySection({
           <div className="mb-1 px-1">
             <ActionBadge action="out" />
           </div>
-          <table className="w-full sm:table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
             <colgroup>
               <col />
-              <col className="sm:w-56" />
+              <col className="w-36 sm:w-56" />
             </colgroup>
             <tbody>{tableRows(outEntries)}</tbody>
           </table>
@@ -526,10 +526,10 @@ function AddressDaySection({
           <div className="mb-1 px-1">
             <ActionBadge action="in" />
           </div>
-          <table className="w-full sm:table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
             <colgroup>
               <col />
-              <col className="sm:w-56" />
+              <col className="w-36 sm:w-56" />
             </colgroup>
             <tbody>{tableRows(inEntries)}</tbody>
           </table>
