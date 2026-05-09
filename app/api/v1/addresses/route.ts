@@ -30,6 +30,7 @@ export async function GET() {
       a.id,
       a.street,
       a.house_number,
+      a.gelbe_tonne_behaelter,
       ua.is_default,
       ua.created_at
     FROM user_addresses ua
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { street, house_number, sab_standplatz_id } = body;
+  const { street, house_number, sab_standplatz_id, gelbe_tonne_behaelter } = body;
 
   if (!street || !house_number || !sab_standplatz_id) {
     return NextResponse.json(
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
   await ensureUser(kindeUser.id, kindeUser.email ?? "");
 
   const [user] = await db`
-    SELECT id FROM users WHERE kinde_id = ${kindeUser.id}
+    SELECT id, account_type FROM users WHERE kinde_id = ${kindeUser.id}
   `;
 
   // Enforce 50-address limit
@@ -82,14 +83,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const accountType = ((user.account_type as string) ?? "private") as
+    | "private"
+    | "business";
+  const gelbeTonenBehaelter =
+    accountType === "private"
+      ? ((gelbe_tonne_behaelter as string) ?? "b120_b240")
+      : "b120_b240";
+
   // Find or create the canonical address record.
   // The unique key is (sab_street_id, house_number); sab_standplatz_id is NOT
   // unique — it identifies a waste-collection tour, not a single address.
   const [address] = await db`
-    INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id)
-    VALUES (${street}, ${house_number}, ${street}, ${sab_standplatz_id})
+    INSERT INTO addresses (street, house_number, sab_street_id, sab_standplatz_id, gelbe_tonne_behaelter)
+    VALUES (${street}, ${house_number}, ${street}, ${sab_standplatz_id}, ${gelbeTonenBehaelter})
     ON CONFLICT (sab_street_id, house_number)
-    DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id
+    DO UPDATE SET sab_standplatz_id = EXCLUDED.sab_standplatz_id,
+                 gelbe_tonne_behaelter = EXCLUDED.gelbe_tonne_behaelter
     RETURNING id
   `;
 
@@ -119,6 +129,7 @@ export async function POST(request: NextRequest) {
       a.id,
       a.street,
       a.house_number,
+      a.gelbe_tonne_behaelter,
       ua.is_default,
       ua.created_at
     FROM user_addresses ua
@@ -128,7 +139,7 @@ export async function POST(request: NextRequest) {
 
   // Fire-and-forget: cache pickup events from the SAB API.
   // Errors are logged inside syncPickupEvents and never surface here.
-  syncPickupEvents(address.id, street, house_number).catch((err) =>
+  syncPickupEvents(address.id, street, house_number, accountType).catch((err) =>
     console.error("[addresses POST] syncPickupEvents unexpected error:", err),
   );
 

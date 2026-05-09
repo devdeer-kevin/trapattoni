@@ -141,8 +141,23 @@ const BIN_TYPE_STYLES: Record<string, { dot: string; text: string }> = {
   Restabfall: { dot: "bg-gray-700", text: "text-gray-700" },
 };
 
-function BinTypeBadge({ binType }: { binType: string }) {
-  const style = BIN_TYPE_STYLES[binType] ?? {
+function BinTypeBadge({
+  binType,
+  behaelter,
+  accountType,
+}: {
+  binType: string;
+  behaelter: string | null;
+  accountType: string;
+}) {
+  let label = binType;
+  if (binType === "Gelbe Tonne" && accountType === "business" && behaelter) {
+    label =
+      behaelter === "b1100" ? "Gelbe Tonne 1100 L" : "Gelbe Tonne 120/240 L";
+  }
+
+  const styleKey = binType === "Gelbe Tonne" ? "Gelbe Tonne" : binType;
+  const style = BIN_TYPE_STYLES[styleKey] ?? {
     dot: "bg-gray-400",
     text: "text-gray-600",
   };
@@ -153,7 +168,7 @@ function BinTypeBadge({ binType }: { binType: string }) {
       <span
         className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`}
       />
-      {binType}
+      {label}
     </span>
   );
 }
@@ -165,11 +180,13 @@ function DaySection({
   entries,
   showDate = true,
   subLabel,
+  accountType,
 }: {
   date: string; // YYYY-MM-DD
   entries: DayEntry[];
   showDate?: boolean;
   subLabel?: string;
+  accountType: string;
 }) {
   if (entries.length === 0) return null;
 
@@ -192,7 +209,7 @@ function DaySection({
       <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
         <colgroup>
           <col />
-          <col className="w-44" />
+          <col className="w-48" />
           <col className="w-28" />
         </colgroup>
         <thead className="print:hidden">
@@ -212,7 +229,11 @@ function DaySection({
                 {ev.street} {ev.houseNumber}
               </td>
               <td className="px-3 py-2.5 text-sm print:py-1 print:text-xs">
-                <BinTypeBadge binType={ev.binType} />
+                <BinTypeBadge
+                  binType={ev.binType}
+                  behaelter={ev.behaelter}
+                  accountType={accountType}
+                />
               </td>
               <td className="px-3 py-2.5 print:py-1">
                 <ActionBadge action={action} />
@@ -229,10 +250,12 @@ function WeekSection({
   title,
   weekEvents,
   addressOrder,
+  accountType,
 }: {
   title: string;
   weekEvents: { [date: string]: RouteEvent[] };
   addressOrder: number[];
+  accountType: string;
 }) {
   const outBuckets: { [date: string]: RouteEvent[] } = {};
   const inBuckets: { [date: string]: RouteEvent[] } = {};
@@ -299,6 +322,7 @@ function WeekSection({
                     date={date}
                     entries={morningOut}
                     subLabel="→ Vormittags"
+                    accountType={accountType}
                   />
                   {afternoonIn.length > 0 && (
                     <DaySection
@@ -306,6 +330,7 @@ function WeekSection({
                       entries={afternoonIn}
                       showDate={false}
                       subLabel="Nachmittags – rein"
+                      accountType={accountType}
                     />
                   )}
                   {afternoonOut.length > 0 && (
@@ -314,6 +339,7 @@ function WeekSection({
                       entries={afternoonOut}
                       showDate={false}
                       subLabel="Nachmittags – raus"
+                      accountType={accountType}
                     />
                   )}
                 </div>
@@ -333,7 +359,14 @@ function WeekSection({
                 addressOrder.indexOf(b.event.addressId)
               );
             });
-            return <DaySection key={date} date={date} entries={entries} />;
+            return (
+              <DaySection
+                key={date}
+                date={date}
+                entries={entries}
+                accountType={accountType}
+              />
+            );
           })}
         </div>
       )}
@@ -535,6 +568,7 @@ export default function RoutePage() {
                       addressOrder,
                     )}
                     addressOrder={addressOrder}
+                    accountType={data.accountType}
                   />
                   <WeekSection
                     title={`Nächste Woche (ab ${nextWeekLabel()})`}
@@ -544,6 +578,7 @@ export default function RoutePage() {
                       addressOrder,
                     )}
                     addressOrder={addressOrder}
+                    accountType={data.accountType}
                   />
                 </>
               );

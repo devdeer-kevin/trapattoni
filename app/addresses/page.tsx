@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { MapPin, Star, Trash2, Plus, X } from "lucide-react";
+import { MapPin, Star, Trash2, Plus, X, Pencil } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -13,12 +13,15 @@ type SavedAddress = {
   house_number: string;
   is_default: boolean;
   created_at: string;
+  gelbe_tonne_behaelter: string;
 };
 
 type HouseNumberEntry = {
   number: string;
   sabStandplatzId: string;
 };
+
+type GelbeTonenBehaelter = "b120_b240" | "b1100";
 
 // ---------------------------------------------------------------------------
 // Street autocomplete (same pattern as app/page.tsx)
@@ -140,15 +143,26 @@ function ConfirmDeleteDialog({
 // Address card
 // ---------------------------------------------------------------------------
 
+const BEHAELTER_LABEL: Record<string, string> = {
+  b120_b240: "120/240 L",
+  b1100: "1100 L",
+};
+
 function AddressCard({
   address,
+  accountType,
   onSetDefault,
   onDelete,
+  onChangeContainer,
 }: {
   address: SavedAddress;
+  accountType: string | null;
   onSetDefault: (id: string) => void;
   onDelete: (address: SavedAddress) => void;
+  onChangeContainer: (id: string, behaelter: GelbeTonenBehaelter) => void;
 }) {
+  const [editingContainer, setEditingContainer] = useState(false);
+
   return (
     <div
       className={`rounded-2xl border bg-background-subtle px-4 py-4 shadow-sm transition-all ${
@@ -188,6 +202,55 @@ function AddressCard({
                 Als Standard setzen
               </button>
             )}
+
+            {/* Container size – only for private users */}
+            {accountType === "private" && (
+              <div className="mt-1.5">
+                {!editingContainer ? (
+                  <button
+                    onClick={() => setEditingContainer(true)}
+                    className="inline-flex items-center gap-1 text-xs text-foreground-tertiary hover:text-accent-secondary"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    Gelbe Tonne:{" "}
+                    {BEHAELTER_LABEL[address.gelbe_tonne_behaelter] ??
+                      address.gelbe_tonne_behaelter}
+                  </button>
+                ) : (
+                  <div className="mt-1 flex items-center gap-3">
+                    {(["b120_b240", "b1100"] as GelbeTonenBehaelter[]).map(
+                      (val) => (
+                        <label
+                          key={val}
+                          className="flex cursor-pointer items-center gap-1.5"
+                        >
+                          <input
+                            type="radio"
+                            name={`behaelter-${address.id}`}
+                            value={val}
+                            checked={address.gelbe_tonne_behaelter === val}
+                            onChange={() => {
+                              onChangeContainer(address.id, val);
+                              setEditingContainer(false);
+                            }}
+                            className="accent-accent"
+                          />
+                          <span className="text-xs text-foreground-secondary">
+                            {BEHAELTER_LABEL[val]}
+                          </span>
+                        </label>
+                      ),
+                    )}
+                    <button
+                      onClick={() => setEditingContainer(false)}
+                      className="text-xs text-foreground-tertiary hover:text-foreground-secondary"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -209,13 +272,16 @@ function AddressCard({
 // ---------------------------------------------------------------------------
 
 function AddAddressForm({
+  accountType,
   onSave,
   onCancel,
 }: {
+  accountType: string | null;
   onSave: (
     street: string,
     houseNumber: string,
     sabStandplatzId: string,
+    gelbeTonenBehaelter: GelbeTonenBehaelter,
   ) => Promise<string | null>;
   onCancel: () => void;
 }) {
@@ -225,6 +291,8 @@ function AddAddressForm({
   );
   const [loadingHouses, setLoadingHouses] = useState(false);
   const [selected, setSelected] = useState<HouseNumberEntry | null>(null);
+  const [gelbeTonenBehaelter, setGelbeTonenBehaelter] =
+    useState<GelbeTonenBehaelter>("b120_b240");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -261,7 +329,12 @@ function AddAddressForm({
 
     setSaving(true);
     setError(null);
-    const err = await onSave(street, selected.number, selected.sabStandplatzId);
+    const err = await onSave(
+      street,
+      selected.number,
+      selected.sabStandplatzId,
+      gelbeTonenBehaelter,
+    );
     setSaving(false);
     if (err) setError(err);
   }
@@ -324,6 +397,35 @@ function AddAddressForm({
           </div>
         )}
 
+        {/* Container size picker – only for private users, after house number is selected */}
+        {selected && accountType === "private" && (
+          <div>
+            <p className="mb-2 text-xs font-medium text-foreground-tertiary">
+              Behältergröße Gelbe Tonne
+            </p>
+            <div className="flex gap-4">
+              {(["b120_b240", "b1100"] as GelbeTonenBehaelter[]).map((val) => (
+                <label
+                  key={val}
+                  className="flex cursor-pointer items-center gap-2"
+                >
+                  <input
+                    type="radio"
+                    name="gelbeTonenBehaelter"
+                    value={val}
+                    checked={gelbeTonenBehaelter === val}
+                    onChange={() => setGelbeTonenBehaelter(val)}
+                    className="accent-accent"
+                  />
+                  <span className="text-sm text-foreground-secondary">
+                    {BEHAELTER_LABEL[val]}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Confirm button – only visible once a house number is selected */}
         {selected && (
           <button
@@ -355,12 +457,18 @@ export default function AddressesPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<SavedAddress | null>(null);
+  const [accountType, setAccountType] = useState<string | null>(null);
 
-  // Load addresses on mount
+  // Load addresses and account type on mount
   useEffect(() => {
-    fetch("/api/v1/addresses")
-      .then((r) => r.json())
-      .then((data) => setAddresses(data.addresses ?? []))
+    Promise.all([
+      fetch("/api/v1/addresses").then((r) => r.json()),
+      fetch("/api/v1/user/me").then((r) => r.json()),
+    ])
+      .then(([addrData, userData]) => {
+        setAddresses(addrData.addresses ?? []);
+        setAccountType(userData.account_type ?? "private");
+      })
       .catch(() => setPageError("Fehler beim Laden der Adressen."))
       .finally(() => setPageLoading(false));
   }, []);
@@ -392,11 +500,32 @@ export default function AddressesPage() {
     if (!res.ok) setAddresses(prev);
   }
 
+  // Change container size – optimistic update
+  async function handleChangeContainer(
+    id: string,
+    behaelter: GelbeTonenBehaelter,
+  ) {
+    const prev = addresses;
+    setAddresses(
+      addresses.map((a) =>
+        a.id === id ? { ...a, gelbe_tonne_behaelter: behaelter } : a,
+      ),
+    );
+
+    const res = await fetch(`/api/v1/addresses/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gelbe_tonne_behaelter: behaelter }),
+    });
+    if (!res.ok) setAddresses(prev);
+  }
+
   // Save new address – returns an error string on failure, null on success
   async function handleSave(
     street: string,
     houseNumber: string,
     sabStandplatzId: string,
+    gelbeTonenBehaelter: GelbeTonenBehaelter,
   ): Promise<string | null> {
     try {
       const res = await fetch("/api/v1/addresses", {
@@ -406,6 +535,7 @@ export default function AddressesPage() {
           street,
           house_number: houseNumber,
           sab_standplatz_id: sabStandplatzId,
+          gelbe_tonne_behaelter: gelbeTonenBehaelter,
         }),
       });
 
@@ -440,6 +570,7 @@ export default function AddressesPage() {
       {/* Add form – always at the top */}
       {showAddForm && (
         <AddAddressForm
+          accountType={accountType}
           onSave={handleSave}
           onCancel={() => setShowAddForm(false)}
         />
@@ -497,8 +628,10 @@ export default function AddressesPage() {
             <AddressCard
               key={addr.id}
               address={addr}
+              accountType={accountType}
               onSetDefault={handleSetDefault}
               onDelete={setConfirmTarget}
+              onChangeContainer={handleChangeContainer}
             />
           ))}
         </div>

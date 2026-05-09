@@ -39,6 +39,7 @@ export type RouteEvent = {
   position: number;
   pickupDate: string; // YYYY-MM-DD
   binType: string;
+  behaelter: string | null;
   binOut: string; // YYYY-MM-DD – prev workday
   binIn: string; // YYYY-MM-DD – next workday
 };
@@ -107,7 +108,8 @@ export async function GET() {
     SELECT
       address_id,
       pickup_date::text AS pickup_date,
-      bin_type
+      bin_type,
+      behaelter
     FROM pickup_events
     WHERE address_id = ANY(${addressIds})
       AND pickup_date >= ${toISODate(rangeStart)}
@@ -149,6 +151,7 @@ export async function GET() {
       position: addr.position,
       pickupDate,
       binType: ev.bin_type as string,
+      behaelter: (ev.behaelter as string | null) ?? null,
       binOut: accountType === "business"
         ? toISODate(getBinOutDay(pickupDateObj))
         : toISODate(prevDay(pickupDateObj)),
