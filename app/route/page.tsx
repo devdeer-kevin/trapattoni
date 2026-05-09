@@ -130,16 +130,6 @@ type AddressViewDay = {
   in: AddressViewEntry[];
 };
 
-function getBinLabel(
-  binType: string,
-  behaelter: string | null,
-  accountType: string,
-): string {
-  if (binType === "Gelbe Tonne" && accountType === "business" && behaelter) {
-    return behaelter === "b1100" ? "Gelbe Tonne 1100 L" : "Gelbe Tonne 120/240 L";
-  }
-  return binType;
-}
 
 function buildAddressView(
   weekEvents: { [date: string]: RouteEvent[] },
@@ -494,10 +484,17 @@ function AddressDaySection({
         <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
           {entry.street} {entry.houseNumber}
         </td>
-        <td className="px-3 py-2.5 text-sm text-foreground-secondary print:py-1 print:text-xs">
-          {entry.bins
-            .map((b) => getBinLabel(b.binType, b.behaelter, accountType))
-            .join(", ")}
+        <td className="px-3 py-2.5 text-sm print:py-1 print:text-xs">
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {entry.bins.map((b) => (
+              <BinTypeBadge
+                key={`${b.binType}-${b.behaelter ?? ""}`}
+                binType={b.binType}
+                behaelter={b.behaelter}
+                accountType={accountType}
+              />
+            ))}
+          </div>
         </td>
       </tr>
     ));
