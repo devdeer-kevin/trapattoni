@@ -114,6 +114,83 @@ function applyFilterAndOrder(
 }
 
 // ---------------------------------------------------------------------------
+// Address-view helpers
+// ---------------------------------------------------------------------------
+
+type AddressViewEntry = {
+  addressId: number;
+  street: string;
+  houseNumber: string;
+  bins: Array<{ binType: string; behaelter: string | null }>;
+};
+
+type AddressViewDay = {
+  date: string;
+  out: AddressViewEntry[];
+  in: AddressViewEntry[];
+};
+
+function getBinLabel(
+  binType: string,
+  behaelter: string | null,
+  accountType: string,
+): string {
+  if (binType === "Gelbe Tonne" && accountType === "business" && behaelter) {
+    return behaelter === "b1100" ? "Gelbe Tonne 1100 L" : "Gelbe Tonne 120/240 L";
+  }
+  return binType;
+}
+
+function buildAddressView(
+  weekEvents: { [date: string]: RouteEvent[] },
+  addressOrder: number[],
+): AddressViewDay[] {
+  const outByDate = new Map<string, Map<number, AddressViewEntry>>();
+  const inByDate = new Map<string, Map<number, AddressViewEntry>>();
+
+  for (const events of Object.values(weekEvents)) {
+    for (const ev of events) {
+      for (const [dateKey, byDate] of [
+        [ev.binOut, outByDate],
+        [ev.binIn, inByDate],
+      ] as [string, Map<string, Map<number, AddressViewEntry>>][]) {
+        if (!byDate.has(dateKey)) byDate.set(dateKey, new Map());
+        const addrMap = byDate.get(dateKey)!;
+        if (!addrMap.has(ev.addressId)) {
+          addrMap.set(ev.addressId, {
+            addressId: ev.addressId,
+            street: ev.street,
+            houseNumber: ev.houseNumber,
+            bins: [],
+          });
+        }
+        const entry = addrMap.get(ev.addressId)!;
+        if (
+          !entry.bins.some(
+            (b) => b.binType === ev.binType && b.behaelter === ev.behaelter,
+          )
+        ) {
+          entry.bins.push({ binType: ev.binType, behaelter: ev.behaelter });
+        }
+      }
+    }
+  }
+
+  const allDates = Array.from(
+    new Set([...outByDate.keys(), ...inByDate.keys()]),
+  ).sort();
+
+  const sortByOrder = (a: AddressViewEntry, b: AddressViewEntry) =>
+    addressOrder.indexOf(a.addressId) - addressOrder.indexOf(b.addressId);
+
+  return allDates.map((date) => ({
+    date,
+    out: Array.from(outByDate.get(date)?.values() ?? []).sort(sortByOrder),
+    in: Array.from(inByDate.get(date)?.values() ?? []).sort(sortByOrder),
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -395,6 +472,118 @@ function WeekSection({
   );
 }
 
+function AddressDaySection({
+  date,
+  outEntries,
+  inEntries,
+  accountType,
+}: {
+  date: string;
+  outEntries: AddressViewEntry[];
+  inEntries: AddressViewEntry[];
+  accountType: string;
+}) {
+  if (outEntries.length === 0 && inEntries.length === 0) return null;
+
+  const tableRows = (entries: AddressViewEntry[]) =>
+    entries.map((entry) => (
+      <tr
+        key={entry.addressId}
+        className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
+      >
+        <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
+          {entry.street} {entry.houseNumber}
+        </td>
+        <td className="px-3 py-2.5 text-sm text-foreground-secondary print:py-1 print:text-xs">
+          {entry.bins
+            .map((b) => getBinLabel(b.binType, b.behaelter, accountType))
+            .join(", ")}
+        </td>
+      </tr>
+    ));
+
+  return (
+    <div className="mt-2">
+      <div className="mb-1 px-1">
+        <span className="text-sm font-semibold text-foreground-secondary print:text-xs">
+          {formatDate(date)}
+        </span>
+      </div>
+
+      {outEntries.length > 0 && (
+        <div className="mb-2">
+          <div className="mb-1 px-1">
+            <ActionBadge action="out" />
+          </div>
+          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+            <colgroup>
+              <col />
+              <col className="w-56" />
+            </colgroup>
+            <tbody>{tableRows(outEntries)}</tbody>
+          </table>
+        </div>
+      )}
+
+      {inEntries.length > 0 && (
+        <div>
+          <div className="mb-1 px-1">
+            <ActionBadge action="in" />
+          </div>
+          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+            <colgroup>
+              <col />
+              <col className="w-56" />
+            </colgroup>
+            <tbody>{tableRows(inEntries)}</tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeekSectionByAddress({
+  title,
+  weekEvents,
+  addressOrder,
+  accountType,
+}: {
+  title: string;
+  weekEvents: { [date: string]: RouteEvent[] };
+  addressOrder: number[];
+  accountType: string;
+}) {
+  const days = buildAddressView(weekEvents, addressOrder);
+  const isEmpty = days.length === 0;
+
+  return (
+    <section className="mb-8 print:mb-4">
+      <h2 className="mb-3 text-base font-bold text-foreground print:mb-1 print:text-sm">
+        {title}
+      </h2>
+
+      {isEmpty ? (
+        <p className="rounded-xl bg-background px-4 py-6 text-center text-sm text-foreground-tertiary print:hidden">
+          Keine Abholungen in dieser Woche.
+        </p>
+      ) : (
+        <div className="space-y-4 print:space-y-2">
+          {days.map((day) => (
+            <AddressDaySection
+              key={day.date}
+              date={day.date}
+              outEntries={day.out}
+              inEntries={day.in}
+              accountType={accountType}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
@@ -408,6 +597,7 @@ export default function RoutePage() {
   );
   const [addressOrder, setAddressOrder] = useState<number[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"byBin" | "byAddress">("byBin");
 
   useEffect(() => {
     fetch("/api/v1/route")
@@ -554,6 +744,32 @@ export default function RoutePage() {
             </div>
           )}
 
+          {/* View toggle */}
+          {data && (
+            <div className="no-print mb-6 flex w-fit rounded-xl border border-border bg-background-subtle p-1">
+              <button
+                onClick={() => setViewMode("byBin")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                  viewMode === "byBin"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-foreground-secondary hover:text-foreground"
+                }`}
+              >
+                Nach Tonne
+              </button>
+              <button
+                onClick={() => setViewMode("byAddress")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                  viewMode === "byAddress"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-foreground-secondary hover:text-foreground"
+                }`}
+              >
+                Nach Adresse
+              </button>
+            </div>
+          )}
+
           {/* Route data */}
           {data &&
             (() => {
@@ -565,6 +781,16 @@ export default function RoutePage() {
                 (a, b) =>
                   addressOrder.indexOf(a.addressId) -
                   addressOrder.indexOf(b.addressId),
+              );
+              const currentFiltered = applyFilterAndOrder(
+                data.currentWeek,
+                hiddenAddressIds,
+                addressOrder,
+              );
+              const nextFiltered = applyFilterAndOrder(
+                data.nextWeek,
+                hiddenAddressIds,
+                addressOrder,
               );
               return (
                 <>
@@ -581,26 +807,37 @@ export default function RoutePage() {
                       handleHideAll(orderedAddresses.map((a) => a.addressId))
                     }
                   />
-                  <WeekSection
-                    title={`Diese Woche (ab ${currentWeekLabel()})`}
-                    weekEvents={applyFilterAndOrder(
-                      data.currentWeek,
-                      hiddenAddressIds,
-                      addressOrder,
-                    )}
-                    addressOrder={addressOrder}
-                    accountType={data.accountType}
-                  />
-                  <WeekSection
-                    title={`Nächste Woche (ab ${nextWeekLabel()})`}
-                    weekEvents={applyFilterAndOrder(
-                      data.nextWeek,
-                      hiddenAddressIds,
-                      addressOrder,
-                    )}
-                    addressOrder={addressOrder}
-                    accountType={data.accountType}
-                  />
+                  {viewMode === "byBin" ? (
+                    <>
+                      <WeekSection
+                        title={`Diese Woche (ab ${currentWeekLabel()})`}
+                        weekEvents={currentFiltered}
+                        addressOrder={addressOrder}
+                        accountType={data.accountType}
+                      />
+                      <WeekSection
+                        title={`Nächste Woche (ab ${nextWeekLabel()})`}
+                        weekEvents={nextFiltered}
+                        addressOrder={addressOrder}
+                        accountType={data.accountType}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <WeekSectionByAddress
+                        title={`Diese Woche (ab ${currentWeekLabel()})`}
+                        weekEvents={currentFiltered}
+                        addressOrder={addressOrder}
+                        accountType={data.accountType}
+                      />
+                      <WeekSectionByAddress
+                        title={`Nächste Woche (ab ${nextWeekLabel()})`}
+                        weekEvents={nextFiltered}
+                        addressOrder={addressOrder}
+                        accountType={data.accountType}
+                      />
+                    </>
+                  )}
                 </>
               );
             })()}
