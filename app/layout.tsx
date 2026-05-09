@@ -15,6 +15,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "TonneRaus - Abfuhrkalender Magdeburg",
   description: "Abfuhrkalender für Magdeburg",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 const themeInitScript = `
