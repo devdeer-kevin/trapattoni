@@ -174,6 +174,31 @@ function BinTypeBadge({
 }
 
 type DayEntry = { event: RouteEvent; action: Action };
+type CombinedDayEntry = { event: RouteEvent; actions: Action[] };
+
+function groupByAddress(
+  entries: DayEntry[],
+  addressOrder: number[],
+): CombinedDayEntry[] {
+  const map = new Map<string, CombinedDayEntry>();
+  for (const { event, action } of entries) {
+    const key = `${event.addressId}-${event.binType}-${event.behaelter ?? ""}`;
+    const existing = map.get(key);
+    if (existing) {
+      if (!existing.actions.includes(action)) {
+        existing.actions.push(action);
+        existing.actions.sort((a) => (a === "out" ? -1 : 1));
+      }
+    } else {
+      map.set(key, { event, actions: [action] });
+    }
+  }
+  return Array.from(map.values()).sort(
+    (a, b) =>
+      addressOrder.indexOf(a.event.addressId) -
+      addressOrder.indexOf(b.event.addressId),
+  );
+}
 
 function DaySection({
   date,
@@ -183,7 +208,7 @@ function DaySection({
   accountType,
 }: {
   date: string; // YYYY-MM-DD
-  entries: DayEntry[];
+  entries: CombinedDayEntry[];
   showDate?: boolean;
   subLabel?: string;
   accountType: string;
@@ -210,7 +235,7 @@ function DaySection({
         <colgroup>
           <col />
           <col className="w-48" />
-          <col className="w-28" />
+          <col className="w-44" />
         </colgroup>
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
@@ -220,9 +245,9 @@ function DaySection({
           </tr>
         </thead>
         <tbody>
-          {entries.map(({ event: ev, action }) => (
+          {entries.map(({ event: ev, actions }) => (
             <tr
-              key={`${ev.addressId}-${ev.binType}-${ev.pickupDate}-${ev.behaelter ?? ""}-${action}`}
+              key={`${ev.addressId}-${ev.binType}-${ev.pickupDate}-${ev.behaelter ?? ""}`}
               className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
             >
               <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
@@ -236,7 +261,11 @@ function DaySection({
                 />
               </td>
               <td className="px-3 py-2.5 print:py-1">
-                <ActionBadge action={action} />
+                <div className="flex flex-wrap gap-1.5">
+                  {actions.map((action) => (
+                    <ActionBadge key={action} action={action} />
+                  ))}
+                </div>
               </td>
             </tr>
           ))}
@@ -320,14 +349,14 @@ function WeekSection({
                 <div key={date} className="space-y-2 print:space-y-1">
                   <DaySection
                     date={date}
-                    entries={morningOut}
+                    entries={groupByAddress(morningOut, addressOrder)}
                     subLabel="→ Vormittags"
                     accountType={accountType}
                   />
                   {afternoonIn.length > 0 && (
                     <DaySection
                       date={date}
-                      entries={afternoonIn}
+                      entries={groupByAddress(afternoonIn, addressOrder)}
                       showDate={false}
                       subLabel="Nachmittags – rein"
                       accountType={accountType}
@@ -336,7 +365,7 @@ function WeekSection({
                   {afternoonOut.length > 0 && (
                     <DaySection
                       date={date}
-                      entries={afternoonOut}
+                      entries={groupByAddress(afternoonOut, addressOrder)}
                       showDate={false}
                       subLabel="Nachmittags – raus"
                       accountType={accountType}
@@ -346,24 +375,16 @@ function WeekSection({
               );
             }
 
-            // Normal case: single table, all raus grouped first then all rein
-            const entries: DayEntry[] = [
-              ...morningOut,
-              ...afternoonOut,
-              ...afternoonIn,
-            ];
-            entries.sort((a, b) => {
-              if (a.action !== b.action) return a.action === "out" ? -1 : 1;
-              return (
-                addressOrder.indexOf(a.event.addressId) -
-                addressOrder.indexOf(b.event.addressId)
-              );
-            });
+            // Normal case: one row per address, both actions shown side by side
+            const combined = groupByAddress(
+              [...morningOut, ...afternoonOut, ...afternoonIn],
+              addressOrder,
+            );
             return (
               <DaySection
                 key={date}
                 date={date}
-                entries={entries}
+                entries={combined}
                 accountType={accountType}
               />
             );

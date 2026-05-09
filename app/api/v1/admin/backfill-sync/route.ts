@@ -6,21 +6,31 @@ import { syncPickupEvents } from "@/lib/sab/sync-pickup-events";
 // POST /api/v1/admin/backfill-sync
 // Temporary one-off endpoint: re-syncs pickup events for all addresses with
 // the new Gelbe Tonne logic (behaelter-aware). Delete this file after use.
-export async function POST() {
+// Use offset parameter to paginate: { offset: 0 }, { offset: 5 }, etc.
+export async function POST(request: Request) {
   const { isAuthenticated } = getKindeServerSession();
   if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const body = await request.json().catch(() => ({}));
+  const offset = Number(body.offset ?? 0);
+  const limit = 5;
+
   const addresses = await db`
-    SELECT a.id, a.street, a.house_number
+    SELECT a.id, a.street, a.house_number, a.stadtteil_id, a.gelbe_tonne_behaelter,
+           u.account_type
     FROM addresses a
     JOIN user_addresses ua ON ua.address_id = a.id
+    JOIN users u ON u.id = ua.user_id
     ORDER BY a.id ASC
+    LIMIT ${limit} OFFSET ${offset}
   `;
 
   const result = {
-    total: addresses.length,
+    offset,
+    limit,
+    returned: addresses.length,
     success: 0,
     failed: 0,
     errors: [] as { addressId: number; error: string }[],
