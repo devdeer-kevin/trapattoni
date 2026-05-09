@@ -130,7 +130,6 @@ type AddressViewDay = {
   in: AddressViewEntry[];
 };
 
-
 function buildAddressView(
   weekEvents: { [date: string]: RouteEvent[] },
   addressOrder: number[],
@@ -301,8 +300,8 @@ function DaySection({
       <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
         <colgroup>
           <col />
-          <col className="w-48" />
-          <col className="w-44" />
+          <col className="w-28 sm:w-48" />
+          <col className="w-28 sm:w-44" />
         </colgroup>
         <thead className="print:hidden">
           <tr className="border-b border-border-subtle bg-background text-left text-xs font-medium text-foreground-tertiary">
@@ -320,7 +319,7 @@ function DaySection({
               <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
                 {ev.street} {ev.houseNumber}
               </td>
-              <td className="px-3 py-2.5 text-sm print:py-1 print:text-xs">
+              <td className="px-3 py-2.5 text-xs sm:text-sm print:py-1 print:text-xs">
                 <BinTypeBadge
                   binType={ev.binType}
                   behaelter={ev.behaelter}
@@ -512,10 +511,10 @@ function AddressDaySection({
           <div className="mb-1 px-1">
             <ActionBadge action="out" />
           </div>
-          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+          <table className="w-full sm:table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
             <colgroup>
               <col />
-              <col className="w-56" />
+              <col className="sm:w-56" />
             </colgroup>
             <tbody>{tableRows(outEntries)}</tbody>
           </table>
@@ -527,10 +526,10 @@ function AddressDaySection({
           <div className="mb-1 px-1">
             <ActionBadge action="in" />
           </div>
-          <table className="w-full table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
+          <table className="w-full sm:table-fixed border-collapse overflow-hidden border border-border-subtle bg-background-subtle shadow-sm print:rounded-none print:shadow-none">
             <colgroup>
               <col />
-              <col className="w-56" />
+              <col className="sm:w-56" />
             </colgroup>
             <tbody>{tableRows(inEntries)}</tbody>
           </table>
