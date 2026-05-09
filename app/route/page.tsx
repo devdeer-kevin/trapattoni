@@ -222,7 +222,7 @@ function DaySection({
         <tbody>
           {entries.map(({ event: ev, action }) => (
             <tr
-              key={`${ev.addressId}-${ev.binType}-${action}`}
+              key={`${ev.addressId}-${ev.binType}-${ev.pickupDate}-${ev.behaelter ?? ""}-${action}`}
               className="border-b border-border-subtle last:border-0 hover:bg-background print:border-border"
             >
               <td className="px-3 py-2.5 text-xs sm:text-sm text-foreground print:py-1 print:text-xs">
