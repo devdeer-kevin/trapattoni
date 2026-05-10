@@ -411,6 +411,10 @@ function WeekSection({
               (afternoonIn.length > 0 || afternoonOut.length > 0);
 
             if (needsSplit) {
+              const afternoonCombined = groupByAddress(
+                [...afternoonIn, ...afternoonOut],
+                addressOrder,
+              );
               return (
                 <div key={date} className="space-y-2 print:space-y-1">
                   <DaySection
@@ -419,21 +423,12 @@ function WeekSection({
                     subLabel="→ Vormittags"
                     accountType={accountType}
                   />
-                  {afternoonIn.length > 0 && (
+                  {afternoonCombined.length > 0 && (
                     <DaySection
                       date={date}
-                      entries={groupByAddress(afternoonIn, addressOrder)}
+                      entries={afternoonCombined}
                       showDate={false}
-                      subLabel="Nachmittags – rein"
-                      accountType={accountType}
-                    />
-                  )}
-                  {afternoonOut.length > 0 && (
-                    <DaySection
-                      date={date}
-                      entries={groupByAddress(afternoonOut, addressOrder)}
-                      showDate={false}
-                      subLabel="Nachmittags – raus"
+                      subLabel="Nachmittags"
                       accountType={accountType}
                     />
                   )}
